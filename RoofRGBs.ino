@@ -61,10 +61,6 @@ void RoofAnimationFadeOut() {
 }
 
 void RoofUpdateRgbLights() {
-  if (mCurrentMillis - mRoofLastMillis < 10) {
-    return;
-  }
-  mRoofLastMillis = mCurrentMillis;
   
   for(int index = 0; index < mCountRgbLeds1; index++) {
     int red = mMoveLightArray_1_Red[index];
@@ -144,12 +140,32 @@ void RoofSetNextColor() {
   }
 }
 
+void RoofMovingReset(){
+  for(int index = 0; index < mCountRgbLeds1; index++) {
+    mMoveLightArray_1_Red[index] = 0;
+    mMoveLightArray_1_Green[index] = 0;
+    mMoveLightArray_1_Blue[index] = 0;
+  }
+
+  mMoveLightArray_1_IndexRed = 0;
+  mMoveLightArray_1_IndexGreen = 0;
+  mMoveLightArray_1_IndexBlue = 0;
+}
+
 void RoofSetMoving() {
+  if (mCurrentMillis - mRoofLastMillis < 10) {
+    return;
+  }
+  mRoofLastMillis = mCurrentMillis;
   
   // RED
-  RoofSetMovingDirection(mMoveLightArray_1_ForwardRed, mMoveLightArray_1_IndexRed, mCountRgbLeds1, true);
+  RoofSetMovingDirection(mMoveLightArray_1_ForwardRed, mMoveLightArray_1_IndexRed, mCountRgbLeds1, false);
   RoofSetMovingDirection(mMoveLightArray_1_ForwardGreen, mMoveLightArray_1_IndexGreen, mCountRgbLeds1, false);
   RoofSetMovingDirection(mMoveLightArray_1_ForwardBlue, mMoveLightArray_1_IndexBlue, mCountRgbLeds1, false);
+
+  if(mSerialMonitor) {
+    Serial.print("Index: "); Serial.println(mMoveLightArray_1_IndexRed, DEC);
+  }
 
   for(int index = 0; index < mCountRgbLeds1; index++) {
     if(mMoveLightArray_1_Red[index] > 0){

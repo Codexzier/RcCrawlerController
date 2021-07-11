@@ -6,11 +6,11 @@ void RcInputsReadInputs() {
 
   // TODO: Ausgabe der Werte wieder geben.
   if(mSerialMonitor) {
-    Serial.println("Read channel signals:");
-    Serial.print("INPUT A: "); Serial.print(mReadValueA);
-    Serial.print("\tINPUT B: "); Serial.print(mReadValueB);
-    Serial.print("\tINPUT C: "); Serial.print(mReadValueC);
-    Serial.print("\tINPUT D: "); Serial.println(mReadValueD);
+//    Serial.println("Read channel signals:");
+//    Serial.print("INPUT A: "); Serial.print(mReadValueA);
+//    Serial.print("\tINPUT B: "); Serial.print(mReadValueB);
+//    Serial.print("\tINPUT C: "); Serial.print(mReadValueC);
+//    Serial.print("\tINPUT D: "); Serial.println(mReadValueD);
     delay(100);
   }
 }
@@ -28,7 +28,7 @@ void RxInputBlinker(int inputValue, int minValue, int maxValue, int middleValue)
     return;
   }
 
-  if(mCurrentMillis - mBlinkerLastCurrentTime > 1000) {
+  if(mCurrentMillis - mBlinkerLastCurrentTime > 500) {
     mChangeBlinkerOnOff = !mChangeBlinkerOnOff;
     mBlinkerLastCurrentTime = mCurrentMillis;
   }
@@ -71,6 +71,8 @@ void RxInputSetOnStandLightOrDriveLight(int inputValue, int minValue, int maxVal
   }
 }
 
+bool mRxResetMovingLight = false;
+
 void RxInputSetOnStripHeadlightOrStripAnimation(int inputValue, int minValue, int maxValue, int middleValue) {
 
   // set off lights
@@ -78,6 +80,11 @@ void RxInputSetOnStripHeadlightOrStripAnimation(int inputValue, int minValue, in
 
     RoofAnimationFadeOut();
     RoofUpdateRgbLights();
+
+    BumperAnimationFadeOut();
+    BumperUpdateRgbLights();
+
+    mRxResetMovingLight = true;
     return;
   }
 
@@ -87,51 +94,63 @@ void RxInputSetOnStripHeadlightOrStripAnimation(int inputValue, int minValue, in
 
     RoofAnimationFadeOn();
     RoofUpdateRgbLights();
+
+    BumperAnimationFadeOn();
+    BumperUpdateRgbLights();
+
+    mRxResetMovingLight = true;
     return;
   }
 
   // animation
   if(inputValue > maxValue - mThresholdValue) {
 
-    // set animationmode
-    switch(mPixel_1_AnimationMode) {
-      case(0): {
-        // Set next rgb LED
-        RoofSetMoving();
-        break;
-      }
-      case(1): {
-        RoofAnimationFadeOut();
-        break;
-      }
-      case(2): {
-        RoofSetMoving();
-        break;
-      }
-      default: {
-        RoofAnimationFadeOut();
-        break;
-      }
+    if(mRxResetMovingLight) {
+      RoofMovingReset();
+      mRxResetMovingLight = false;
     }
 
-    switch(mPixel_2_AnimationMode) {
-      case(0): {
-        BumperAnimationFadeOut();
-        break;
-      }
-      case(1): {
-        // TODO offen
-        break;
-      }
-      case(2): {
-        // TODO offen
-        break;
-      }
-      default: {
-        RoofAnimationFadeOut();
-        break;
-      }
-    }
+    RoofSetMoving();
+    
+//    // set animationmode
+//    switch(mPixel_1_AnimationMode) {
+//      case(0): {
+//        // Set next rgb LED
+//        RoofSetMoving();
+//        break;
+//      }
+//      case(1): {
+//        RoofAnimationFadeOut();
+//        break;
+//      }
+//      case(2): {
+//        RoofSetMoving();
+//        break;
+//      }
+//      default: {
+//        RoofAnimationFadeOut();
+//        break;
+//      }
+//    }
+
+//    switch(mPixel_2_AnimationMode) {
+//      case(0): {
+//        BumperAnimationFadeOut();
+//        break;
+//      }
+//      case(1): {
+//        // TODO offen
+//        break;
+//      }
+//      case(2): {
+//        // TODO offen
+//        break;
+//      }
+//      default: {
+//        RoofAnimationFadeOut();
+//        break;
+//      }
+//    }
     
     // update prepared rgb values setup values to show.
     RoofUpdateRgbLights();
@@ -180,10 +199,13 @@ void RxInputSetValueTo(int target, int value, int minValue, int maxValue, int mi
     }
     case(3): {
       RxInputSetOnStripHeadlightOrStripAnimation(value, minValue, maxValue, middleValue);
+
+      
       break;
     }
     case(4): {
-      
+
+      RxInputSetStripAnimMode();
       break;
     }
     default: {

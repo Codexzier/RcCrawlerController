@@ -2,13 +2,16 @@
 // Set first RGB LED on Front Bumper.
 void CarLEDsInit() {
   for(int chanel = 0; chanel < 16; chanel++) {
-    mCarLights.setPWM(chanel, 0, 0);
+    mCarLights.setChannelDutyCycle(chanel, 50, 50);
   }
 
-  mCarLights.setPWM(0, 0, 4096);
 }
 
 void CarLEDsNextChannel(){
+  for(int chanel = 0; chanel < 12; chanel++) {
+    mCarLights.setChannelDutyCycle(chanel, 100, 0);
+  }
+  
   if(mCarLightsChannel < 15) {
     mCarLightsChannel++;
   }
@@ -16,6 +19,8 @@ void CarLEDsNextChannel(){
     mCarLightsChannel = 0;
   }
 
+  mCarLights.setChannelDutyCycle(mCarLightsChannel, 0, 100);
+  
   if(mSerialMonitor) {
     Serial.print("Set Channel: ");
     Serial.println(mCarLightsChannel, DEC);
@@ -23,60 +28,69 @@ void CarLEDsNextChannel(){
 }
 
 void CarLEDsSetOffStandAndNormalLights(){
-  mCarLights.setPWM(0, 0, 0);
-  mCarLights.setPWM(1, 0, 0);
-  mCarLights.setPWM(2, 0, 0);
-  mCarLights.setPWM(3, 0, 0);
-  mCarLights.setPWM(4, 0, 0);
-  mCarLights.setPWM(5, 0, 0);
+  //front
+  mCarLights.setChannelDutyCycle(1, 100, 0);
+  mCarLights.setChannelDutyCycle(4, 100, 0);
+  // rear
+  mCarLights.setChannelDutyCycle(7, 100, 0);
+  mCarLights.setChannelDutyCycle(9, 100, 0);
+  // front stand
+  mCarLights.setChannelDutyCycle(2, 100, 0);
+  mCarLights.setChannelDutyCycle(5, 100, 0);
 }
 
 void CarLEDsSetOnNormalLights(){
-  mCarLights.setPWM(0, 0, 4096);
-  mCarLights.setPWM(1, 0, 4096);
-  mCarLights.setPWM(2, 0, 4096);
-  mCarLights.setPWM(3, 0, 4096);
+  // front 
+  mCarLights.setChannelDutyCycle(1, 0, 100);
+  mCarLights.setChannelDutyCycle(4, 0, 100);
+  // rear
+  mCarLights.setChannelDutyCycle(7, 0, 100);
+  mCarLights.setChannelDutyCycle(9, 0, 100);
 }
 
 void CarLEDsSetOnStandLights(){
-  mCarLights.setPWM(4, 0, 4096);
-  mCarLights.setPWM(5, 0, 4096);
+  mCarLights.setChannelDutyCycle(2, 0, 100);
+  mCarLights.setChannelDutyCycle(5, 0, 100);
 }
 
 void CarLEDsSetOffBlinkers(){
-  mCarLights.setPWM(6, 0, 0);
-  mCarLights.setPWM(7, 0, 0);
-  mCarLights.setPWM(8, 0, 0);
-  mCarLights.setPWM(9, 0, 0);
+  mCarLights.setChannelDutyCycle(0, 100, 0);
+  mCarLights.setChannelDutyCycle(8, 100, 0);
+  mCarLights.setChannelDutyCycle(3, 100, 0);
+  mCarLights.setChannelDutyCycle(6, 100, 0);
 }
 
 void CarLEDsSetOnBlinkers(){
-  mCarLights.setPWM(6, 0, 4096);
-  mCarLights.setPWM(7, 0, 4096);
-  mCarLights.setPWM(8, 0, 4096);
-  mCarLights.setPWM(9, 0, 4096);
+  mCarLights.setChannelDutyCycle(0, 0, 100);
+  mCarLights.setChannelDutyCycle(8, 0, 100);
+  mCarLights.setChannelDutyCycle(3, 0, 100);
+  mCarLights.setChannelDutyCycle(6, 0, 100);
 }
 
 void CarLEDsSetOnBlinkersLeft(){
-  mCarLights.setPWM(6, 0, 4096);
-  mCarLights.setPWM(7, 0, 4096);
-  mCarLights.setPWM(8, 0, 0);
-  mCarLights.setPWM(9, 0, 0);
+  // left
+  mCarLights.setChannelDutyCycle(3, 0, 100);
+  mCarLights.setChannelDutyCycle(6, 0, 100);
+  // right
+  mCarLights.setChannelDutyCycle(0, 100, 0);
+  mCarLights.setChannelDutyCycle(8, 100, 0);
 }
 
 void CarLEDsSetOnBlinkersRight(){
-  mCarLights.setPWM(6, 0, 0);
-  mCarLights.setPWM(7, 0, 0);
-  mCarLights.setPWM(8, 0, 4096);
-  mCarLights.setPWM(9, 0, 4096);
+  // left
+  mCarLights.setChannelDutyCycle(3, 100, 0);
+  mCarLights.setChannelDutyCycle(6, 100, 0);
+  // right
+  mCarLights.setChannelDutyCycle(0, 0, 100);
+  mCarLights.setChannelDutyCycle(8, 0, 100);
 }
 
-void CarLEDsSetOnFrontBumper(){
-  mCarLights.setPWM(10, 0, 4096);
-  mCarLights.setPWM(11, 0, 4096);
-}
-
-void CarLEDsSetOnRearBumper(){
-  mCarLights.setPWM(12, 0, 4096);
-  mCarLights.setPWM(13, 0, 4096);
-}
+//void CarLEDsSetOnFrontBumper(){
+//  mCarLights.setChannelDutyCycle(10, 0, 100);
+//  mCarLights.setChannelDutyCycle(11, 0, 100);
+//}
+//
+//void CarLEDsSetOnRearBumper(){
+//  mCarLights.setChannelDutyCycle(12, 0, 100);
+//  mCarLights.setChannelDutyCycle(13, 0, 100);
+//}

@@ -21,13 +21,13 @@ void BumperUpdateRgbLights() {
   mBumperLastMillis = mCurrentMillis;
   
   for(int index = 0; index < mCountRgbLeds1; index++) {
-    int red = mMoveLightArray_1_Red[index];
-    int green = mMoveLightArray_1_Green[index];
-    int blue = mMoveLightArray_1_Blue[index];
-    mPixels1.setPixelColor(index, mPixels1.Color(red, green, blue));
+    int red = mMoveLightArray_2_Red[index];
+    int green = mMoveLightArray_2_Green[index];
+    int blue = mMoveLightArray_2_Blue[index];
+    mPixels2.setPixelColor(index, mPixels2.Color(red, green, blue));
   }
   
-  mPixels1.show();
+  mPixels2.show();
 }
 
 void BumperAnimationFadeOn() {
