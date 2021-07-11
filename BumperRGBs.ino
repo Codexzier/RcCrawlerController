@@ -1,3 +1,5 @@
+int mBumperLastMillis = 0;
+
 // ========================================================================================
 // Set first RGB LED on Front Bumper.
 void BumperStateOn() {
@@ -12,6 +14,12 @@ void BumperStateOn() {
 }
 
 void BumperUpdateRgbLights() {
+
+  if (mCurrentMillis - mBumperLastMillis < 10) {
+    return;
+  }
+  mBumperLastMillis = mCurrentMillis;
+  
   for(int index = 0; index < mCountRgbLeds1; index++) {
     int red = mMoveLightArray_1_Red[index];
     int green = mMoveLightArray_1_Green[index];

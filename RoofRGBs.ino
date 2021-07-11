@@ -1,3 +1,5 @@
+int mRoofLastMillis = 0;
+
 // ========================================================================================
 // Set first RGB LED on Front Roof.
 void RoofStateOn() {
@@ -12,6 +14,7 @@ void RoofStateOn() {
 }
 
 void RoofAnimateInitialRgbLight() {
+  
   for(int index = 0; index < mCountRgbLeds1; index++) {
     mPixels1.setPixelColor(index, mPixels1.Color(255, 0, 0));
     mPixels1.setPixelColor(mCountRgbLeds1 - index - 1, mPixels1.Color(255, 0, 0));
@@ -58,6 +61,11 @@ void RoofAnimationFadeOut() {
 }
 
 void RoofUpdateRgbLights() {
+  if (mCurrentMillis - mRoofLastMillis < 10) {
+    return;
+  }
+  mRoofLastMillis = mCurrentMillis;
+  
   for(int index = 0; index < mCountRgbLeds1; index++) {
     int red = mMoveLightArray_1_Red[index];
     int green = mMoveLightArray_1_Green[index];

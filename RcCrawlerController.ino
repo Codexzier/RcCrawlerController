@@ -73,6 +73,11 @@ int mPixel_2_AnimationMode = 0;
 
 Adafruit_NeoPixel mPixels2 = Adafruit_NeoPixel(mCountRgbLeds2, mPinRgbStripe2, NEO_GRB + NEO_KHZ800);
 
+// RGB LEDs Array State
+int mMoveLightArray_2_Red[mCountRgbLeds2];
+int mMoveLightArray_2_Green[mCountRgbLeds2];
+int mMoveLightArray_2_Blue[mCountRgbLeds2];
+
 // ========================================================================================
 // ws2812b - Stripe Unknow 1
 const int mPinRgbStripe3 = 5;
@@ -191,50 +196,11 @@ void loop() {
   RcInputsReadInputs();
 
   // switch the LEDs on or off by the input values from the receiver.
-  RxInputSetValueToTargetLights()
-  
-//
+  RxInputSetValueToTargetLights();
 
-//
-//  // Test PCA9685 Ausgangswechsel
-//  CarLEDsNextChannel();
-//
-//
-//  StatusStateOn2();
+  BumperUpdateRgbLights();
 
-//  for(int chanel = 0; chanel < 16; chanel++) {
-//    mCarLights.setPWM(chanel, 0, 4000);
-//  }
-//  
-//  delay(1000);
-//
-//  for(int chanel = 0; chanel < 16; chanel++) {
-//    mCarLights.setPWM(chanel, 0, 0);
-//  }
-//  
-//  delay(1000);
+  RoofAnimationFadeOn();
+  RoofUpdateRgbLights();
 
-//  mPixels0.setPixelColor(0, mPixels0.Color(255, 0, 120));
-//  mPixels0.show();
-//  mPixels1.setPixelColor(0, mPixels1.Color(255, 0, 120));
-//  mPixels1.show();
-//  mPixels2.setPixelColor(0, mPixels2.Color(0, 255, 120));
-//  mPixels2.show();
-//  mPixels3.setPixelColor(0, mPixels3.Color(255, 120, 255));
-//  mPixels3.show();
-//  mPixels4.setPixelColor(0, mPixels4.Color(120, 255, 255));
-//  mPixels4.show();
-//
-//  delay(1000);
-//  
-//  mPixels0.setPixelColor(0, mPixels0.Color(255, 0, 0));
-//  mPixels0.show();
-//  mPixels1.setPixelColor(0, mPixels1.Color(255, 0, 0));
-//  mPixels1.show();
-//  mPixels2.setPixelColor(0, mPixels2.Color(0, 255, 0));
-//  mPixels2.show();
-//  mPixels3.setPixelColor(0, mPixels3.Color(255, 0, 255));
-//  mPixels3.show();
-//  mPixels4.setPixelColor(0, mPixels4.Color(0, 255, 255));
-//  mPixels4.show();
 }
