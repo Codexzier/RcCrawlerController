@@ -153,7 +153,7 @@ void RoofMovingReset(){
 }
 
 void RoofSetMoving() {
-  if (mCurrentMillis - mRoofLastMillis < 10) {
+  if (mCurrentMillis - mRoofLastMillis < 5) {
     return;
   }
   mRoofLastMillis = mCurrentMillis;

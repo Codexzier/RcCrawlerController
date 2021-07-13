@@ -7,10 +7,10 @@ void RcInputsReadInputs() {
   // TODO: Ausgabe der Werte wieder geben.
   if(mSerialMonitor) {
 //    Serial.println("Read channel signals:");
-//    Serial.print("INPUT A: "); Serial.print(mReadValueA);
-//    Serial.print("\tINPUT B: "); Serial.print(mReadValueB);
-//    Serial.print("\tINPUT C: "); Serial.print(mReadValueC);
-//    Serial.print("\tINPUT D: "); Serial.println(mReadValueD);
+    Serial.print("INPUT A: "); Serial.print(mReadValueA);
+    Serial.print("\tINPUT B: "); Serial.print(mReadValueB);
+    Serial.print("\tINPUT C: "); Serial.print(mReadValueC);
+    Serial.print("\tINPUT D: "); Serial.println(mReadValueD);
     delay(100);
   }
 }
@@ -28,7 +28,7 @@ void RxInputBlinker(int inputValue, int minValue, int maxValue, int middleValue)
     return;
   }
 
-  if(mCurrentMillis - mBlinkerLastCurrentTime > 500) {
+  if(mCurrentMillis - mBlinkerLastCurrentTime > 300) {
     mChangeBlinkerOnOff = !mChangeBlinkerOnOff;
     mBlinkerLastCurrentTime = mCurrentMillis;
   }
@@ -199,13 +199,10 @@ void RxInputSetValueTo(int target, int value, int minValue, int maxValue, int mi
     }
     case(3): {
       RxInputSetOnStripHeadlightOrStripAnimation(value, minValue, maxValue, middleValue);
-
-      
       break;
     }
     case(4): {
-
-      RxInputSetStripAnimMode();
+      //RxInputSetStripAnimMode();
       break;
     }
     default: {
