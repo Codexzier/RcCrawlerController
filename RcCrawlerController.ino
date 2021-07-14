@@ -144,6 +144,7 @@ typedef struct {
   int off;
   int on;
   int maxOn;
+  int noChanged;
 } carLedType;
 
 carLedType mLEDs[] = {
@@ -159,7 +160,18 @@ carLedType mLEDs[] = {
   {0,0} // Rear Blinker Right
 };
 
-
+// TODO: ist noch auszufüllen
+//Front Left, 0=1
+//Front Right, 1= 4
+//Front Stand Left, 2=2
+//Front Stand Right, 3=5
+//Front Blinker Left, 4=3
+//Front Blinker Right, 5=0
+//Rear Left, 6=7
+//Rear Right, 7=9
+//Rear Blinker Left, 8=8
+//Rear Blinker Right, 9=6
+int mLedMapping[] {};
 
 
 
@@ -233,39 +245,6 @@ void setup() {
   pinMode(PIN_INPUT_D, INPUT);
   
   //AnimateInitialRgbLight();
-  int vDuty = 0;
-  while(true) {
-    for(int chanel = 0; chanel < 16; chanel++) {
-      mCarLights.setChannelDutyCycle(chanel, vDuty, 100 - vDuty);
-    }
-
-    vDuty++;
-    if(vDuty >= 100) {
-      break;
-    }
-  }
-  delay(3000);
-
-
-
-//  while(true) {
-//    RoofAnimationFadeOut();
-//    RoofUpdateRgbLights();
-//
-//    BumperAnimationFadeOut();
-//    BumperUpdateRgbLights();
-//
-//    if(mMoveLightArray_1_Red[0] < 20 && mMoveLightArray_2_Red[0] < 20) {
-//      break;
-//    }
-//    delay(100);
-//  }
-//  while(true) {
-//
-//    
-//    CarLEDsNextChannel();
-//    delay(5000);
-//  }
 }
 
 

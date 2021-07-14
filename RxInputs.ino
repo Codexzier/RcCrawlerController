@@ -27,7 +27,7 @@ void RxInputBlinker(int inputValue, int minValue, int maxValue, int middleValue)
     return;
   }
 
-  if(mCurrentMillis - mBlinkerLastCurrentTime > 300) {
+  if(mCurrentMillis - mBlinkerLastCurrentTime > 200) {
     mChangeBlinkerOnOff = !mChangeBlinkerOnOff;
     mBlinkerLastCurrentTime = mCurrentMillis;
   }
