@@ -137,7 +137,37 @@ const int mInputValueD_To = 3;            // 4 => Change Strip Light Mode and al
 
                                           // TODO: Save last used Strip Light Mode
 
+// ========================================================================================
+// LED States
+
+typedef struct {
+  int off;
+  int on;
+  int maxOn;
+} carLedType;
+
+carLedType mLEDs[] = {
+  {0,0}, // Front Left
+  {0,0}, // Front Right
+  {0,0}, // Front Stand Left
+  {0,0}, // Front Stand Right
+  {0,0}, // Front Blinker Left
+  {0,0}, // Front Blinker Right
+  {0,0}, // Rear Left
+  {0,0}, // Rear Right
+  {0,0}, // Rear Blinker Left
+  {0,0} // Rear Blinker Right
+};
+
+
+
+
+
+// ========================================================================================
+// Timings and other things
 int mCurrentMillis;                       // aktuelle verstrichende Zeit.
+
+
 
 void setup() {
   

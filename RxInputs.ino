@@ -4,9 +4,8 @@ void RcInputsReadInputs() {
   mReadValueC = pulseIn(PIN_INPUT_C, HIGH);
   mReadValueD = pulseIn(PIN_INPUT_D, HIGH);
 
-  // TODO: Ausgabe der Werte wieder geben.
+
   if(mSerialMonitor) {
-//    Serial.println("Read channel signals:");
     Serial.print("INPUT A: "); Serial.print(mReadValueA);
     Serial.print("\tINPUT B: "); Serial.print(mReadValueB);
     Serial.print("\tINPUT C: "); Serial.print(mReadValueC);
@@ -52,7 +51,7 @@ void RxInputBlinker(int inputValue, int minValue, int maxValue, int middleValue)
 }
 
 void RxInputSetOnStandLightOrDriveLight(int inputValue, int minValue, int maxValue, int middleValue) {
-  
+
   // set off lights
   if(inputValue < minValue + mThresholdValue) {
     CarLEDsSetOffStandAndNormalLights();
@@ -63,6 +62,7 @@ void RxInputSetOnStandLightOrDriveLight(int inputValue, int minValue, int maxVal
   if(inputValue > middleValue - mThresholdValue &&
      inputValue < middleValue + mThresholdValue) {
     CarLEDsSetOnStandLights();
+    CarLEDsSetOffNormalLights();
   }
 
   // drive lights
@@ -195,6 +195,7 @@ void RxInputSetValueTo(int target, int value, int minValue, int maxValue, int mi
     }
     case(2): {
       RxInputSetOnStandLightOrDriveLight(value, minValue, maxValue, middleValue);
+      CarLEDsUpdate();
       break;
     }
     case(3): {
