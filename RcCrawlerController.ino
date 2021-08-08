@@ -12,11 +12,11 @@
 
 #include <Adafruit_NeoPixel.h>
 #include <PCA9685.h>
-//#include <Adafruit_PWMServoDriver.h>
 
 // ========================================================================================
 // Debuggen
-bool mSerialMonitor = false;            // Set this value true, for show all Value on Serial Monitor.
+bool mSerialMonitor = true;                // Set this value true, for show all Value 
+                                            // on Serial Monitor.
 
 // ========================================================================================
 // PCA9685 - all LEDs (14)
@@ -28,7 +28,6 @@ bool mSerialMonitor = false;            // Set this value true, for show all Val
 //  - Rear Left/Right Flashs (2)
 //  - Rear Bumper Lights (2)
 
-//Adafruit_PWMServoDriver mCarLights = Adafruit_PWMServoDriver();
 PCA9685 mCarLights;
 
 int mCarLightsChannel = 0;
@@ -48,7 +47,7 @@ Adafruit_NeoPixel mPixels0 = Adafruit_NeoPixel(mCountRgbLeds0, mPinRgbStripe0, N
 const int mPinRgbStripe1 = 3;
 const int mCountRgbLeds1 = 20;   
 const int mTailRgbLeds1 = 40;
-int mPixel_1_AnimationMode = 0;
+int mRgbBrightnessMaxValue1 = 0;
 
 Adafruit_NeoPixel mPixels1 = Adafruit_NeoPixel(mCountRgbLeds1, mPinRgbStripe1, NEO_GRB + NEO_KHZ800);
 
@@ -72,6 +71,7 @@ const int mPinRgbStripe2 = 4;
 const int mCountRgbLeds2 = 10;   
 const int mTailRgbLeds2 = 40;
 int mPixel_2_AnimationMode = 0;
+int mRgbBrightnessMaxValue2 = 0;
 
 Adafruit_NeoPixel mPixels2 = Adafruit_NeoPixel(mCountRgbLeds2, mPinRgbStripe2, NEO_GRB + NEO_KHZ800);
 
@@ -85,6 +85,7 @@ int mMoveLightArray_2_Blue[mCountRgbLeds2];
 const int mPinRgbStripe3 = 5;
 const int mCountRgbLeds3 = 1;   
 int mPixel_3_AnimationMode = 0;
+int mRgbBrightnessMaxValue3 = 0;
 
 Adafruit_NeoPixel mPixels3 = Adafruit_NeoPixel(mCountRgbLeds3, mPinRgbStripe3, NEO_GRB + NEO_KHZ800);
 
@@ -93,6 +94,7 @@ Adafruit_NeoPixel mPixels3 = Adafruit_NeoPixel(mCountRgbLeds3, mPinRgbStripe3, N
 const int mPinRgbStripe4 = 6;
 const int mCountRgbLeds4 = 1;
 int mPixel_4_AnimationMode = 0;
+int mRgbBrightnessMaxValue4 = 0;
 
 Adafruit_NeoPixel mPixels4 = Adafruit_NeoPixel(mCountRgbLeds4, mPinRgbStripe4, NEO_GRB + NEO_KHZ800);
 
@@ -141,45 +143,32 @@ const int mInputValueD_To = 3;            // 4 => Change Strip Light Mode and al
 // LED States
 
 typedef struct {
-  int off;
-  int on;
-  int maxOn;
-  int noChanged;
+  int portNumber;                         // PWM Port Number from 0 to 15
+  int off;                                // keeps the current set off state
+  int on;                                 // keeps the current set on state
+  int maxOn;                              // limits the maximum value that can be switched on
+  int noChanged;                          // indicates whether the light condition has changed
+  bool up;                                // sets or retrieves the state whether the value is set up or down.
 } carLedType;
 
 carLedType mLEDs[] = {
-  {0,0}, // Front Left
-  {0,0}, // Front Right
-  {0,0}, // Front Stand Left
-  {0,0}, // Front Stand Right
-  {0,0}, // Front Blinker Left
-  {0,0}, // Front Blinker Right
-  {0,0}, // Rear Left
-  {0,0}, // Rear Right
-  {0,0}, // Rear Blinker Left
-  {0,0} // Rear Blinker Right
+  {1, 0,0, 100, 0},   // Front Left
+  {4, 0,0, 100, 0},   // Front Right
+  {2, 0,0, 25, 0},    // Front Stand Left
+  {5, 0,0, 25, 0},    // Front Stand Right
+  {3, 0,0, 100, 0},   // Front Blinker Left
+  {0, 0,0, 100, 0},   // Front Blinker Right
+  {7, 0,0, 100, 0},   // Rear Left
+  {9, 0,0, 100, 0},   // Rear Right
+  {6, 0,0, 100, 0},   // Rear Blinker Left
+  {8, 0,0, 100, 0}    // Rear Blinker Right
 };
 
-// TODO: ist noch auszufüllen
-//Front Left, 0=1
-//Front Right, 1= 4
-//Front Stand Left, 2=2
-//Front Stand Right, 3=5
-//Front Blinker Left, 4=3
-//Front Blinker Right, 5=0
-//Rear Left, 6=7
-//Rear Right, 7=9
-//Rear Blinker Left, 8=8
-//Rear Blinker Right, 9=6
-int mLedMapping[] {};
-
-
+int mCarLedBrightness = 100;
 
 // ========================================================================================
 // Timings and other things
 int mCurrentMillis;                       // aktuelle verstrichende Zeit.
-
-
 
 void setup() {
   
@@ -239,24 +228,44 @@ void setup() {
   if(mSerialMonitor) {
     Serial.println("Setup Inputs");
   }
+  
   pinMode(PIN_INPUT_A, INPUT);
   pinMode(PIN_INPUT_B, INPUT);
   pinMode(PIN_INPUT_C, INPUT);
   pinMode(PIN_INPUT_D, INPUT);
-  
-  //AnimateInitialRgbLight();
+
+  for(int index = 0; index < 10; index++) {
+    mCarLights.setChannelDutyCycle(
+      mLEDs[index].portNumber, 
+      10, 
+      10);
+  }
 }
 
-
+int mLastCurrentMillisTimeUp = 0;
 
 void loop() {
 
   // update time
   mCurrentMillis = millis();
-  
-  // read all input receiver signals
-  RcInputsReadInputs();
+  int diff = mCurrentMillis - mLastCurrentMillisTimeUp;
+  mLastCurrentMillisTimeUp = mCurrentMillis;
+  if(diff > 300) {
 
+    for(int index = 0; index < 10; index++) {
+      mCarLights.setChannelDutyCycle(
+        mLEDs[index].portNumber, 
+        10, 
+        10);
+    }
+    
+    RoofRxOffline();
+    BumperRxOffline();
+    return;
+  }
+  
   // switch the LEDs on or off by the input values from the receiver.
   RxInputSetValueToTargetLights();
+
+  Serial.println(" ");
 }

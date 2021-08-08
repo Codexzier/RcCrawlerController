@@ -6,10 +6,11 @@ void RcInputsReadInputs() {
 
 
   if(mSerialMonitor) {
-    Serial.print("INPUT A: "); Serial.print(mReadValueA);
-    Serial.print("\tINPUT B: "); Serial.print(mReadValueB);
-    Serial.print("\tINPUT C: "); Serial.print(mReadValueC);
-    Serial.print("\tINPUT D: "); Serial.println(mReadValueD);
+//    Serial.print("INPUT A: "); Serial.print(mReadValueA);
+//    Serial.print("\tINPUT B: "); Serial.print(mReadValueB);
+//    Serial.print("\tINPUT C: "); Serial.print(mReadValueC);
+//    Serial.print("\tINPUT D: "); Serial.print(mReadValueD);
+//    Serial.print("\t");
     delay(100);
   }
 }
@@ -50,6 +51,8 @@ void RxInputBlinker(int inputValue, int minValue, int maxValue, int middleValue)
   }
 }
 
+
+
 void RxInputSetOnStandLightOrDriveLight(int inputValue, int minValue, int maxValue, int middleValue) {
 
   // set off lights
@@ -63,6 +66,7 @@ void RxInputSetOnStandLightOrDriveLight(int inputValue, int minValue, int maxVal
      inputValue < middleValue + mThresholdValue) {
     CarLEDsSetOnStandLights();
     CarLEDsSetOffNormalLights();
+    return;
   }
 
   // drive lights
@@ -106,51 +110,12 @@ void RxInputSetOnStripHeadlightOrStripAnimation(int inputValue, int minValue, in
   if(inputValue > maxValue - mThresholdValue) {
 
     if(mRxResetMovingLight) {
+      Serial.print("Reset moving light\t");
       RoofMovingReset();
       mRxResetMovingLight = false;
     }
 
     RoofSetMoving();
-    
-//    // set animationmode
-//    switch(mPixel_1_AnimationMode) {
-//      case(0): {
-//        // Set next rgb LED
-//        RoofSetMoving();
-//        break;
-//      }
-//      case(1): {
-//        RoofAnimationFadeOut();
-//        break;
-//      }
-//      case(2): {
-//        RoofSetMoving();
-//        break;
-//      }
-//      default: {
-//        RoofAnimationFadeOut();
-//        break;
-//      }
-//    }
-
-//    switch(mPixel_2_AnimationMode) {
-//      case(0): {
-//        BumperAnimationFadeOut();
-//        break;
-//      }
-//      case(1): {
-//        // TODO offen
-//        break;
-//      }
-//      case(2): {
-//        // TODO offen
-//        break;
-//      }
-//      default: {
-//        RoofAnimationFadeOut();
-//        break;
-//      }
-//    }
     
     // update prepared rgb values setup values to show.
     RoofUpdateRgbLights();
@@ -160,27 +125,29 @@ void RxInputSetOnStripHeadlightOrStripAnimation(int inputValue, int minValue, in
 
 int mStripAnimLastCurrentTime;
 
-void RxInputSetStripAnimMode() {
-  if(mCurrentMillis - mStripAnimLastCurrentTime > 1000) {
+void RxInputSetLightBrightness(int inputValue, int minValue, int maxValue, int middleValue) {
 
-    if(mPixel_1_AnimationMode < 4) {
-      mPixel_1_AnimationMode++;
-      mPixel_2_AnimationMode++;
-      mPixel_3_AnimationMode++;
-      mPixel_4_AnimationMode++;
-    }
-    else {
-      mPixel_1_AnimationMode = 0;
-      mPixel_2_AnimationMode = 0;
-      mPixel_3_AnimationMode = 0;
-      mPixel_4_AnimationMode = 0;
-    }
-    
-    mStripAnimLastCurrentTime = mCurrentMillis;
+  int mappedValueForRgb = map(inputValue, minValue, maxValue, 0, 255);
+  int mappedValueForLEDs = map(inputValue, minValue, maxValue, 0, 100);
+
+  if(mSerialMonitor) {
+//    Serial.print("Mapped Value for RGBs: "); Serial.print(mappedValueForRgb, DEC); Serial.print("\t");
+//    Serial.print("Mapped Value for LEDs: "); Serial.print(mappedValueForLEDs, DEC); Serial.print("\t");
   }
+  
+  mRgbBrightnessMaxValue1 = mappedValueForRgb;
+  mRgbBrightnessMaxValue2 = mappedValueForRgb;
+  mRgbBrightnessMaxValue3 = mappedValueForRgb;
+  mRgbBrightnessMaxValue4 = mappedValueForRgb;
+
+  mCarLedBrightness = mappedValueForLEDs;
 }
 
 void RxInputSetValueToTargetLights(){
+
+  // read all input receiver signals
+  RcInputsReadInputs();
+  
   RxInputSetValueTo(mInputValueA_To, mReadValueA, mInputMinA, mInputMaxA, mInputMiddleA);
   RxInputSetValueTo(mInputValueB_To, mReadValueB, mInputMinB, mInputMaxB, mInputMiddleB);
   RxInputSetValueTo(mInputValueC_To, mReadValueC, mInputMinC, mInputMaxC, mInputMiddleC);
@@ -203,7 +170,7 @@ void RxInputSetValueTo(int target, int value, int minValue, int maxValue, int mi
       break;
     }
     case(4): {
-      //RxInputSetStripAnimMode();
+      RxInputSetLightBrightness(value, minValue, maxValue, middleValue);
       break;
     }
     default: {

@@ -4,12 +4,21 @@ int mRoofLastMillis = 0;
 // Set first RGB LED on Front Roof.
 void RoofStateOn() {
   
-  for(int index = 0; index < mCountRgbLeds0; index++) {
+  for(int index = 0; index < mCountRgbLeds1; index++) {
     mPixels1.setPixelColor(index, mPixels1.Color(0, 0, 0));
   }
 
   // green
   mPixels1.setPixelColor(0, mPixels1.Color(0, 100, 0));
+  mPixels1.show();
+}
+
+void RoofRxOffline() {
+
+  // green
+  for(int index = 0; index < mCountRgbLeds1; index++) {
+    mPixels1.setPixelColor(index, mPixels1.Color(0, 100, 0));
+  }
   mPixels1.show();
 }
 
@@ -61,11 +70,20 @@ void RoofAnimationFadeOut() {
 }
 
 void RoofUpdateRgbLights() {
-  
+
+  //Serial.println("\t");
   for(int index = 0; index < mCountRgbLeds1; index++) {
     int red = mMoveLightArray_1_Red[index];
     int green = mMoveLightArray_1_Green[index];
     int blue = mMoveLightArray_1_Blue[index];
+
+//    if(mSerialMonitor) {
+//      Serial.print("B: "); Serial.print(mRgbBrightnessMaxValue1, DEC); Serial.print("\t");
+//      Serial.print("R: "); Serial.print(red, DEC); Serial.print("\t");
+//      Serial.print("G: "); Serial.print(green, DEC); Serial.print("\t");
+//      Serial.print("B: "); Serial.print(blue, DEC); Serial.println("\t");
+//    }
+    
     mPixels1.setPixelColor(index, mPixels1.Color(red, green, blue));
   }
   
@@ -114,29 +132,31 @@ void RoofSetNextColor() {
 
   bool result = mMoveLightArray_1_ColorSwitch < 10;
   if(mSerialMonitor) {
-    Serial.print("Result: ");
-    Serial.print(result, BIN);
-    Serial.print(" = ");
-    Serial.print(mMoveLightArray_1_ColorSwitch, DEC);
-    Serial.println(" < 10");
+//    Serial.print("Result: ");
+//    Serial.print(result, BIN);
+//    Serial.print(" = ");
+//    Serial.print(mMoveLightArray_1_ColorSwitch, DEC);
+//    Serial.print(" < 10");
+//    Serial.print("\t");
   }
   
   if(mMoveLightArray_1_ColorSwitch < 10) {
     mMoveLightArray_1_ColorSwitch++;
     if(mSerialMonitor) {
-      Serial.println("plus");
+      //Serial.print("plus");  Serial.print("\t");
     }
   }
   else {
     if(mSerialMonitor) {
-      Serial.println("set to 0");
+      //Serial.print("set to 0"); Serial.print("\t");
     }
     mMoveLightArray_1_ColorSwitch = 0;
   }
 
   if(mSerialMonitor) {
-    Serial.print("Color nr: ");
-    Serial.println(mMoveLightArray_1_ColorSwitch, DEC);
+//    Serial.print("Color nr: ");
+//    Serial.print(mMoveLightArray_1_ColorSwitch, DEC);
+//    Serial.print("\t");
   }
 }
 
@@ -158,13 +178,12 @@ void RoofSetMoving() {
   }
   mRoofLastMillis = mCurrentMillis;
   
-  // RED
   RoofSetMovingDirection(mMoveLightArray_1_ForwardRed, mMoveLightArray_1_IndexRed, mCountRgbLeds1, false);
   RoofSetMovingDirection(mMoveLightArray_1_ForwardGreen, mMoveLightArray_1_IndexGreen, mCountRgbLeds1, false);
   RoofSetMovingDirection(mMoveLightArray_1_ForwardBlue, mMoveLightArray_1_IndexBlue, mCountRgbLeds1, false);
 
   if(mSerialMonitor) {
-    Serial.print("Index: "); Serial.println(mMoveLightArray_1_IndexRed, DEC);
+    //Serial.print("Index: "); Serial.print(mMoveLightArray_1_IndexRed, DEC); Serial.print("\t");
   }
 
   for(int index = 0; index < mCountRgbLeds1; index++) {
@@ -177,7 +196,6 @@ void RoofSetMoving() {
     if(mMoveLightArray_1_Blue[index] > 0){
       mMoveLightArray_1_Blue[index] -= mTailRgbLeds1;
     }
-
 
     if(mMoveLightArray_1_Red[index] < 0){
       mMoveLightArray_1_Red[index] = 0;
@@ -194,4 +212,30 @@ void RoofSetMoving() {
     mMoveLightArray_1_Red[mMoveLightArray_1_IndexRed],
     mMoveLightArray_1_Green[mMoveLightArray_1_IndexGreen],
     mMoveLightArray_1_Blue[mMoveLightArray_1_IndexBlue]);
+
+  int red = mMoveLightArray_1_Red[mMoveLightArray_1_IndexRed];
+  int green = mMoveLightArray_1_Green[mMoveLightArray_1_IndexGreen];
+  int blue = mMoveLightArray_1_Blue[mMoveLightArray_1_IndexBlue];
+
+  if(mSerialMonitor) {
+//    Serial.print("B: "); Serial.print(mRgbBrightnessMaxValue1, DEC); Serial.print("\t");
+//    Serial.print("R: "); Serial.print(red, DEC); Serial.print("\t");
+//    Serial.print("G: "); Serial.print(green, DEC); Serial.print("\t");
+//    Serial.print("B: "); Serial.print(blue, DEC); Serial.print("\t");
+  }
+
+//  red = map(mRgbBrightnessMaxValue1, 0, 255, 0, red);
+//  green = map(mRgbBrightnessMaxValue1, 0, 255, 0, green);
+//  blue = map(mRgbBrightnessMaxValue1, 0, 255, 0, blue);
+//
+//  if(mSerialMonitor) {
+//    Serial.print("B: "); Serial.print(mRgbBrightnessMaxValue1, DEC); Serial.print("\t");
+//    Serial.print("R: "); Serial.print(red, DEC); Serial.print("\t");
+//    Serial.print("G: "); Serial.print(green, DEC); Serial.print("\t");
+//    Serial.print("B: "); Serial.print(blue, DEC); Serial.print("\t");
+//  }
+  
+  mMoveLightArray_1_Red[mMoveLightArray_1_IndexRed] = red;
+  mMoveLightArray_1_Green[mMoveLightArray_1_IndexGreen] = green;
+  mMoveLightArray_1_Blue[mMoveLightArray_1_IndexBlue] = blue;
 }

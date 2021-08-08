@@ -4,7 +4,6 @@ void CarLEDsInit() {
   for(int chanel = 0; chanel < 16; chanel++) {
     mCarLights.setChannelDutyCycle(chanel, 50, 50);
   }
-
 }
 
 void CarLEDsNextChannel(){
@@ -22,8 +21,9 @@ void CarLEDsNextChannel(){
   mCarLights.setChannelDutyCycle(mCarLightsChannel, 0, 100);
   
   if(mSerialMonitor) {
-    Serial.print("Set Channel: ");
-    Serial.println(mCarLightsChannel, DEC);
+//    Serial.print("Set Channel: ");
+//    Serial.print(mCarLightsChannel, DEC);
+//    Serial.print("\t");
   }
 }
 
@@ -136,8 +136,30 @@ void CarLEDsSetOnBlinkersRight(){
 //  mCarLights.setChannelDutyCycle(13, 0, 100);
 //}
 
-void CarLedTypeSetValue(int index, bool goOn) {
+// ========================================================================================
+//
+int CarLedsGetIndex(int portNumber) {
+
+  for(int index = 0; index < 10; index++) {
+    if(mLEDs[index].portNumber == portNumber) {
+      return index;
+    }
+  }
+}
+
+// ========================================================================================
+// Set the value to the target LED Car light.
+
+void CarLedTypeSetValue(int portNumber, bool goOn) {
+
+  int index = CarLedsGetIndex(portNumber);
+  
   if(goOn) {
+
+//    if(!mLEDs[index].up) {
+//      return;
+//    }
+
     if(mLEDs[index].off > 0) {
       mLEDs[index].off--;
     }
@@ -146,11 +168,16 @@ void CarLedTypeSetValue(int index, bool goOn) {
       mLEDs[index].on++;
     }
 
-    if(mLEDs[index].on == mLEDs[index].maxOn) {
-      mUp = false;
+    if(mLEDs[index].on >= mLEDs[index].maxOn) {
+      mLEDs[index].up = false;
     }
   }
   else {
+
+//    if(mLEDs[index].up) {
+//      return;
+//    }
+    
     if(mLEDs[index].off < 100) {
       mLEDs[index].off++;
     }
@@ -160,13 +187,37 @@ void CarLedTypeSetValue(int index, bool goOn) {
     }
 
     if(mLEDs[index].off == 100) {
-      mUp = true;
+      mLEDs[index].up = true;
     }
   }
 }
 
+// ========================================================================================
+// 
 void CarLEDsUpdate() {
+  
+//  Serial.print("ON: "); Serial.print(mLEDs[index].on); Serial.print("\t");
+//  int brightness = map(mCarLedBrightness, 0, 100, 0, mLEDs[index].maxOn);
+//  Serial.print("Brightness: "); Serial.print(brightness); Serial.print("\t");
+
+  int m1 = millis();
+    
   for(int index = 0; index < 10; index++) {
-    mCarLights.setChannelDutyCycle(index, mLEDs[index].off, mLEDs[index].on);
+
+    Serial.print("O: "); Serial.print(mLEDs[index].on); Serial.println("\t");
+//
+//    if(mLEDs[index].noChanged == 0) {
+//      continue;
+//    }
+
+    int on = map(mLEDs[index].on, 0, 100, 1, mCarLedBrightness);
+    
+    mCarLights.setChannelDutyCycle(
+      mLEDs[index].portNumber, 
+      mLEDs[index].on, 
+      100);//mLEDs[index].off);
   }
+  int m2 = millis();
+  int diff = m2 - m1;
+  Serial.print("diff: "); Serial.print(diff, DEC); Serial.println();
 }
