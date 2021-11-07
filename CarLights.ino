@@ -1,6 +1,6 @@
 
 int8_t mShowSingleLedAndIndex_Index = 0;        // That used for tests the LEDs positions.
-int16_t mCarLights_FadeSteps = 50;               // steps to fade-in and fade-out.
+int16_t mCarLights_FadeSteps = 150;               // steps to fade-in and fade-out.
 
 
 // ========================================================================================

@@ -1,5 +1,10 @@
+void WS2812_Helper_Reduce(uint8_t &ledValue, uint8_t reduceValue) {
+  if(ledValue - reduceValue < 0) {
+    ledValue = 0;
+  }
 
-
+  ledValue -= reduceValue;
+}
 
 // ========================================================================================
 // 0 = Orange

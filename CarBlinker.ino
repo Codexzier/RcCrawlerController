@@ -1,5 +1,5 @@
 bool mChangeBlinkerOnOff = false;
-long mBlinkerLastCurrentTime;
+unsigned long mBlinkerLastCurrentTime = 0;
 
 // ========================================================================================
 // set the flashing 
@@ -12,12 +12,12 @@ void CarBlinker_SetTurnSignal(int inputValue, int minValue, int maxValue, int mi
     return;
   }
 
-  if(mCurrentMillis - mBlinkerLastCurrentTime > 500) {
+  if(mCurrentMillis - mBlinkerLastCurrentTime > 300 || mBlinkerLastCurrentTime < 0) {
     mChangeBlinkerOnOff = !mChangeBlinkerOnOff;
     mBlinkerLastCurrentTime = mCurrentMillis;
 
-    if(mBlinkerLastCurrentTime < 0) {
-      mBlinkerLastCurrentTime = 0;
+    if(mChangeBlinkerOnOff) {
+
     }
 
     if(mSerialMonitor) {
@@ -26,8 +26,6 @@ void CarBlinker_SetTurnSignal(int inputValue, int minValue, int maxValue, int mi
     }
   }
 
-  
-  
   if(mChangeBlinkerOnOff) {
     CarLight_SetOffBlinkers();
 

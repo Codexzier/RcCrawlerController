@@ -121,6 +121,7 @@ uint16_t mInputMaxA = 1988;                    // minimum value of input signal.
 uint16_t mInputMiddleB = 1490;                 // middel state of the input signal. Example: stick on neutral position
 uint16_t mInputMinB = 981;                     // minimum value of input signal. Example: stick is move complete down
 uint16_t mInputMaxB = 1999;                    // minimum value of input signal. Example: stick is move complete up
+
 uint16_t mInputMiddleC = 1490;                 // middel state of the input signal. Example: stick on neutral position
 uint16_t mInputMinC = 981;                     // minimum value of input signal. Example: stick is move complete down
 uint16_t mInputMaxC = 1999;                    // minimum value of input signal. Example: stick is move complete up
@@ -145,7 +146,8 @@ uint16_t mReadValueE = 0;                      // input signal result from E
 
 // ========================================================================================
 // Timings and other things
-uint16_t mCurrentMillis;                       // aktuelle verstrichende Zeit.
+unsigned long mCurrentMillis;                       // aktuelle verstrichende Zeit.
+unsigned long mLastMillis;                       // aktuelle verstrichende Zeit.
 
 uint16_t mActiveCount = 0;
 
@@ -193,7 +195,7 @@ void setup() {
 
 
 long mTimeToChange = 0;
-bool mChangeLightsToOnOrOff = false;
+bool mChangeLightsToOnOrOff = true;
 
 // ========================================================================================
 void loop() {
@@ -208,7 +210,7 @@ void loop() {
 
 mTimeToChange++;
 
-   if(mTimeToChange > 30000) {
+   if(mTimeToChange > 20000) {
       mChangeLightsToOnOrOff = !mChangeLightsToOnOrOff;
       mTimeToChange = 0;
   
@@ -222,12 +224,16 @@ mTimeToChange++;
 //    }
 
   if(mChangeLightsToOnOrOff) {
-    CarLight_SetOnStandLightOrDriveLight(1000, mInputMinB, mInputMaxB, mInputMiddleB);
-    CarBlinker_SetTurnSignal(1000, mInputMinA, mInputMaxA, mInputMiddleA);
+    //CarLight_SetOnStandLightOrDriveLight(1000, mInputMinB, mInputMaxB, mInputMiddleB);
+    //CarBlinker_SetTurnSignal(1000, mInputMinA, mInputMaxA, mInputMiddleA);
+    Bumper_SetAnimationMod(2000, mInputMinC, mInputMaxC, mInputMiddleC);
+    Roof_SetAnimationMod(2000, mInputMinC, mInputMaxC, mInputMiddleC);
   }
   else {
-    CarLight_SetOnStandLightOrDriveLight(2000, mInputMinB, mInputMaxB, mInputMiddleB);
-    CarBlinker_SetTurnSignal(2000, mInputMinA, mInputMaxA, mInputMiddleA);
+    //CarLight_SetOnStandLightOrDriveLight(2000, mInputMinB, mInputMaxB, mInputMiddleB);
+    //CarBlinker_SetTurnSignal(2000, mInputMinA, mInputMaxA, mInputMiddleA);
+    Bumper_SetAnimationMod(2000, mInputMinC, mInputMaxC, mInputMiddleC);
+    Roof_SetAnimationMod(2000, mInputMinC, mInputMaxC, mInputMiddleC);
   }
 //  if(mChangeLightsToOnOrOff) {
 //    CarLight_On();
@@ -239,7 +245,9 @@ mTimeToChange++;
 //    mPixels1.setPixelColor(0, mPixels1.Color(255, 0, 0));
 //    mPixels1.show();
 //  }
-  
+
+  Bumper_Update();
+  Roof_Update();
   CarLight_Update();
 
 //Serial.println("---------------------------------------------");
@@ -286,9 +294,14 @@ mTimeToChange++;
 
 // ========================================================================================
 bool UpdateTimeUp(bool f){
-  mCurrentMillis = millis() - mCurrentMillis;
-  boolean result =  mCurrentMillis > 1000;
+  mCurrentMillis = millis();
 
+  boolean result = false;
+  if(mCurrentMillis - mLastMillis > 1000) {
+    mLastMillis = mCurrentMillis;
+    result = true;
+  }
+  
   if(result && f) {
     if(mSerialMonitor) {
       Serial.println("long iteration. Set all in offline state!");
