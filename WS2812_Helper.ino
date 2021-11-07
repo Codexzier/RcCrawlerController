@@ -1,11 +1,18 @@
-//
+
+
+
+// ========================================================================================
 // 0 = Orange
 // 1 = gelb
 // 2 = türkis
-
+// 3 = hellblau
+// 4 = defuse neutral
+// 5 = dark tyrkis
+// 6 = dark wine red
+// 7 = 
 // 8 = lila
 // 9 = rosa
-void HelperSetRgbColor(int colorIndex, int &red, int &green, int &blue) {
+void Helper_SetRgbColor(int colorIndex, int &red, int &green, int &blue) {
  
   switch(colorIndex) {
     case(0): {
@@ -86,11 +93,9 @@ void HelperSetRgbColor(int colorIndex, int &red, int &green, int &blue) {
       break;
     }
     default: {
-
-      // random
-      //red = 9; //random(0, 150);
-      //green = 0; //random(0, 150);
-      //blue = 0; //random(0, 150);
+      red = 10; 
+      green = 10;
+      blue = 10; 
       break;
     }
   }
