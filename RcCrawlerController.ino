@@ -87,7 +87,7 @@ int8_t mMoveLightArray_1_ColorSwitch = 8;
 
 // ========================================================================================
 // ws2812b - Stripe Front Bumper
-const uint8_t mPinRgbStripe2 = 3;
+const uint8_t mPinRgbStripe2 = 5;
 const uint8_t mCountRgbLeds2 = 11;   
 const uint8_t mTailRgbLeds2 = 40;
 uint8_t mPixel_2_AnimationMode = 0;

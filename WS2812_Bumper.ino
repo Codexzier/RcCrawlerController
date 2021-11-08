@@ -54,6 +54,10 @@ void Bumper_Off() {
 // 
 void Bumper_SetAnimationMod(int inputValue, int minValue, int maxValue, int middleValue) {
 
+  if(mCurrentMillis - mBumperLastCurrentTime < 70) {
+    return;
+  }
+  mBumperLastCurrentTime = mCurrentMillis;
   
   // set off lights
   if(inputValue < 1000) {//minValue + mThresholdValue) {
@@ -84,6 +88,7 @@ void Bumper_SetAnimationMod(int inputValue, int minValue, int maxValue, int midd
     
     // TODO: Animation
     Bumper_WalkingLight();
+    //delay(100);
   }
 }
 
@@ -91,12 +96,6 @@ void Bumper_SetAnimationMod(int inputValue, int minValue, int maxValue, int midd
 // 
 void Bumper_Update(){
 
-//  if(mCurrentMillis - mBumperLastCurrentTime < 1000) {
-//    return;
-//  }
-//  mBumperLastCurrentTime = mCurrentMillis;
-
-  
   for(uint8_t index = 0; index < mCountRgbLeds2; index++) {
     
     uint8_t red = mMoveLightArray_2_Red[index];
@@ -106,12 +105,6 @@ void Bumper_Update(){
 //    red = map(mRgbBrightnessMaxValue2, 0, 255, 0, red);
 //    green = map(mRgbBrightnessMaxValue2, 0, 255, 0, green);
 //    blue = map(mRgbBrightnessMaxValue2, 0, 255, 0, blue);
-//if(red < 100) {
-//  Serial.print("0");
-//}
-//else {
-//  Serial.print("1");
-//}
     
     mPixels2.setPixelColor(index, mPixels2.Color(red, green, blue));
   }
@@ -122,14 +115,21 @@ void Bumper_Update(){
 
 int8_t mBumperAnimationIndex = 0;
 bool mBumperAnimationLeftToRight = true;
+
 void Bumper_WalkingLight() {
 
   for(uint8_t index = 0; index < mCountRgbLeds2; index++) {
-    
-    WS2812_Helper_Reduce(mMoveLightArray_2_Red[index], 2);
-    WS2812_Helper_Reduce(mMoveLightArray_2_Green[index], 2);
-    WS2812_Helper_Reduce(mMoveLightArray_2_Blue[index], 2);
+    WS2812_Helper_Reduce(mMoveLightArray_2_Red[index], 15);
+    WS2812_Helper_Reduce(mMoveLightArray_2_Green[index], 15);
+    WS2812_Helper_Reduce(mMoveLightArray_2_Blue[index], 15);
   }
+
+//  if(mBumperAnimationIndex < mCountRgbLeds2) {
+//    mBumperAnimationIndex++;
+//  }
+//  else {
+//    mBumperAnimationIndex = 0;
+//  }
 
   if(mBumperAnimationLeftToRight && mBumperAnimationIndex < mCountRgbLeds2) {
     mBumperAnimationIndex++;
@@ -145,7 +145,7 @@ void Bumper_WalkingLight() {
     }
   }
 
-  mMoveLightArray_2_Red[mBumperAnimationIndex] = 100;
-  mMoveLightArray_2_Green[mBumperAnimationIndex] = 20;
-  mMoveLightArray_2_Blue[mBumperAnimationIndex] = 240;
+  mMoveLightArray_2_Red[mBumperAnimationIndex] = 156;
+  mMoveLightArray_2_Green[mBumperAnimationIndex] = 0;
+  mMoveLightArray_2_Blue[mBumperAnimationIndex] = 255;
 }

@@ -1,9 +1,12 @@
-void WS2812_Helper_Reduce(uint8_t &ledValue, uint8_t reduceValue) {
-  if(ledValue - reduceValue < 0) {
+void WS2812_Helper_Reduce(uint8_t &ledValue, int reduceValue) {
+  int lv = (int)ledValue;
+  int result = lv - reduceValue ;
+  if(result < 0) {
     ledValue = 0;
+    return;
   }
 
-  ledValue -= reduceValue;
+  ledValue = (uint8_t)result;
 }
 
 // ========================================================================================
