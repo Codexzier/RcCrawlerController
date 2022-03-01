@@ -7,7 +7,7 @@
 // Receiver:      FrSky RX8R
 // Actor:         RGB LEDs WS2812b, PCA9685
 // Description:   Licht Steuerung
-// Stand:         24.10.2021
+// Stand:         01.03.2022
 // ========================================================================================
 
 #include <Adafruit_NeoPixel.h>
