@@ -205,54 +205,31 @@ void loop() {
   //CarBlinker_SetTurnSignal(1000, mInputMinA, mInputMaxA, mInputMiddleA);
 //  Serial.print("C: "); Serial.print(mActiveCount, DEC);
 //  Serial.print(", mTimeToChange: "); Serial.println(mTimeToChange, DEC);
+
   mActiveCount++;
-  UpdateTimeUp(false);
-
-mTimeToChange++;
-
-   if(mTimeToChange > 20000) {
-      mChangeLightsToOnOrOff = !mChangeLightsToOnOrOff;
-      mTimeToChange = 0;
-  
-      if(mSerialMonitor) {
-        Serial.print("Change Light to: ");
-        Serial.println(mChangeLightsToOnOrOff, BIN);
-      }
-    }
-//    if(mCurrentMillis - mTimeToChange < 0) {
-//      mTimeToChange = 0;
-//    }
-
-  if(mChangeLightsToOnOrOff) {
-    //CarLight_SetOnStandLightOrDriveLight(1000, mInputMinB, mInputMaxB, mInputMiddleB);
-    //CarBlinker_SetTurnSignal(1000, mInputMinA, mInputMaxA, mInputMiddleA);
-    Bumper_SetAnimationMod(2000, mInputMinC, mInputMaxC, mInputMiddleC);
-    Roof_SetAnimationMod(2000, mInputMinC, mInputMaxC, mInputMiddleC);
+  if(UpdateTimeUp(false)) {
+    // im testfall macht das signalisieren eines Signal Verlust kein Sinn.
   }
-  else {
-    //CarLight_SetOnStandLightOrDriveLight(2000, mInputMinB, mInputMaxB, mInputMiddleB);
-    //CarBlinker_SetTurnSignal(2000, mInputMinA, mInputMaxA, mInputMiddleA);
-    Bumper_SetAnimationMod(2000, mInputMinC, mInputMaxC, mInputMiddleC);
-    Roof_SetAnimationMod(2000, mInputMinC, mInputMaxC, mInputMiddleC);
-  }
-//  if(mChangeLightsToOnOrOff) {
-//    CarLight_On();
-//    mPixels1.setPixelColor(0, mPixels1.Color(110, 110, 0));
-//    mPixels1.show();
-//  }
-//  else {
-//    CarLight_Off();
-//    mPixels1.setPixelColor(0, mPixels1.Color(255, 0, 0));
-//    mPixels1.show();
-//  }
 
+  //CarLight_SetOnStandLightOrDriveLight(2000, mInputMinB, mInputMaxB, mInputMiddleB);
+  //CarBlinker_SetTurnSignal(2000, mInputMinA, mInputMaxA, mInputMiddleA);
+  Bumper_SetAnimationMod(2000, mInputMinC, mInputMaxC, mInputMiddleC);
+  Roof_SetAnimationMod(2000, mInputMinC, mInputMaxC, mInputMiddleC);
+
+  // alle aktuellen Einstellungen aktualisieren
   Bumper_Update();
   Roof_Update();
   CarLight_Update();
 
-//Serial.println("---------------------------------------------");
-  //delay(1);
+  if(mSerialMonitor) {
+    Serial.println("---------------------------------------------");
+    delay(1);
+  }
   return;
+
+  //###################################################
+  // Aktuell nicht verwendet
+  //###################################################
 
   // update rgb led stats
   Bumper_Update();
@@ -293,6 +270,12 @@ mTimeToChange++;
 }
 
 // ========================================================================================
+// aktualisiert den aktuellen Zeitabstand
+// Wenn zulange die Signale nicht ausgewertet wurden, 
+// dann soll über andere Funktionen an den LEDs Sichtbar werden, 
+// dass der Empfang unterbrochen wurde.
+// Gibt true zurück, wenn die maximale Zeit überschritten wurde.
+// f = Zeigt auf dem Serialmonitor an, wenn die Zeit überschritten wurde
 bool UpdateTimeUp(bool f){
   mCurrentMillis = millis();
 

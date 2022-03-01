@@ -37,14 +37,19 @@ void Roof_Off() {
 // 
 void Roof_SetAnimationMod(int inputValue, int minValue, int maxValue, int middleValue) {
 
-  // set off lights
+  if(mCurrentMillis - mRoofLastCurrentTime < 22) {
+    return;
+  }
+  mRoofLastCurrentTime = mCurrentMillis;
+
+  // roof lights off (signal is near 1000 or 2000)
   if(inputValue < minValue + mThresholdValue) {
 
     Roof_Off();
     return;
   }
 
-  // headlight on
+  // roof lights on (signal is near 1500)
   if(inputValue > middleValue - mThresholdValue &&
      inputValue < middleValue + mThresholdValue) {
 
@@ -52,22 +57,13 @@ void Roof_SetAnimationMod(int inputValue, int minValue, int maxValue, int middle
     return;
   }
 
-  // animation
+  // roof lights animation for walking light (signal is near to 2000 or 1000)
   if(inputValue > maxValue - mThresholdValue) {
-
-    // TODO: Animation
-    //Roof_Lila();
     Roof_WalkingLight();
   }
 }
 
 void Roof_Update(){
-
-  if(mCurrentMillis - mRoofLastCurrentTime < 500) {
-    return;
-  }
-  
-  mRoofLastCurrentTime = mCurrentMillis;
   
   for(uint8_t index = 0; index < mCountRgbLeds1; index++) {
 
@@ -85,26 +81,16 @@ void Roof_Update(){
   mPixels1.show();
 }
 
-void Roof_Lila() {
-  
-  for(int index = 0; index < mCountRgbLeds1; index++) {
-    mPixels1.setPixelColor(index, mPixels1.Color(50, 00, 70));
-  }
-  mPixels1.show();
-}
-
 int8_t mRoofAnimationIndex = 0;
 bool mRoofAnimationLeftToRight = true;
+
 void Roof_WalkingLight() {
 
   for(uint8_t index = 0; index < mCountRgbLeds1; index++) {
     
-//    WS2812_Helper_Reduce(mMoveLightArray_1_Red[index], 100);
-//    WS2812_Helper_Reduce(mMoveLightArray_1_Green[index], 100);
-//    WS2812_Helper_Reduce(mMoveLightArray_1_Blue[index], 100);
-      mMoveLightArray_1_Red[index] = 0;
-  mMoveLightArray_1_Green[index] = 0;
-  mMoveLightArray_1_Blue[index] = 0;
+    WS2812_Helper_Reduce(mMoveLightArray_1_Red[index], 10);
+    WS2812_Helper_Reduce(mMoveLightArray_1_Green[index], 10);
+    WS2812_Helper_Reduce(mMoveLightArray_1_Blue[index], 10);
   }
 
   if(mRoofAnimationLeftToRight && mRoofAnimationIndex < mCountRgbLeds1) {
@@ -122,6 +108,6 @@ void Roof_WalkingLight() {
   }
 
   mMoveLightArray_1_Red[mRoofAnimationIndex] = 100;
-  mMoveLightArray_1_Green[mRoofAnimationIndex] = 20;
-  mMoveLightArray_1_Blue[mRoofAnimationIndex] = 240;
+  mMoveLightArray_1_Green[mRoofAnimationIndex] = 0; //20;
+  mMoveLightArray_1_Blue[mRoofAnimationIndex] = 0;//240;
 }

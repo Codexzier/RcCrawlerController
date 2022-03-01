@@ -54,12 +54,12 @@ void Bumper_Off() {
 // 
 void Bumper_SetAnimationMod(int inputValue, int minValue, int maxValue, int middleValue) {
 
-  if(mCurrentMillis - mBumperLastCurrentTime < 70) {
+  if(mCurrentMillis - mBumperLastCurrentTime < 40) {
     return;
   }
   mBumperLastCurrentTime = mCurrentMillis;
   
-  // set off lights
+  // bumper lights off (signal is near 1000 or 2000)
   if(inputValue < 1000) {//minValue + mThresholdValue) {
 
     if(mSerialMonitor) {
@@ -69,7 +69,7 @@ void Bumper_SetAnimationMod(int inputValue, int minValue, int maxValue, int midd
     return;
   }
 
-  // headlight on
+  // bumper lights on (signal is near 1500)
   if(inputValue > middleValue - mThresholdValue &&
      inputValue < middleValue + mThresholdValue) {
 
@@ -80,15 +80,13 @@ void Bumper_SetAnimationMod(int inputValue, int minValue, int maxValue, int midd
     return;
   }
 
-  // animation
+  // bumper animation for walking light (signal is near to 2000 or 1000)
   if(inputValue > maxValue - mThresholdValue) {
     if(mSerialMonitor) {
       Serial.println("WS2812 RGB - Bumper Animation");
     }
     
-    // TODO: Animation
     Bumper_WalkingLight();
-    //delay(100);
   }
 }
 
@@ -119,17 +117,10 @@ bool mBumperAnimationLeftToRight = true;
 void Bumper_WalkingLight() {
 
   for(uint8_t index = 0; index < mCountRgbLeds2; index++) {
-    WS2812_Helper_Reduce(mMoveLightArray_2_Red[index], 15);
-    WS2812_Helper_Reduce(mMoveLightArray_2_Green[index], 15);
-    WS2812_Helper_Reduce(mMoveLightArray_2_Blue[index], 15);
+    WS2812_Helper_Reduce(mMoveLightArray_2_Red[index], 30);
+    WS2812_Helper_Reduce(mMoveLightArray_2_Green[index], 30);
+    WS2812_Helper_Reduce(mMoveLightArray_2_Blue[index], 30);
   }
-
-//  if(mBumperAnimationIndex < mCountRgbLeds2) {
-//    mBumperAnimationIndex++;
-//  }
-//  else {
-//    mBumperAnimationIndex = 0;
-//  }
 
   if(mBumperAnimationLeftToRight && mBumperAnimationIndex < mCountRgbLeds2) {
     mBumperAnimationIndex++;
