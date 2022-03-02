@@ -213,7 +213,7 @@ void setup() {
 
   Status_On();
 
-  // --------------------------------------------------------------------
+  // --------------------------------------------------------------------------------------
   // boot sequence roof - Fadein
   while(!mRoof_GoOnline_Finish) {
     UpdateTimeUp(false);
@@ -230,7 +230,7 @@ void setup() {
     Roof_Update();
   }
 
-  // ---------------------------------
+  // --------------------------------------------------------------------------------------
   // boot sequence bumper - Fadein
   while(!mBumper_GoOnline_Finish) {
     UpdateTimeUp(false);
@@ -240,7 +240,7 @@ void setup() {
   mBumper_GoOnline_Finish = false;
 
   // boot sequence roof - Fadeout
-  while(!mRoof_GoOnline_Finish) {
+  while(!mBumper_GoOnline_Finish) {
     UpdateTimeUp(false);
     Bumper_GoOnline_Fadeout();
     Bumper_Update();

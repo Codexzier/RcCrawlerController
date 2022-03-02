@@ -120,9 +120,9 @@ bool mRoofAnimationLeftToRight = true;
 void Roof_WalkingLight() {
 
   for(uint8_t index = 0; index < mCountRgbLeds1; index++) {
-    WS2812_Helper_Reduce(mMoveLightArray_1[index].Red, 10);
-    WS2812_Helper_Reduce(mMoveLightArray_1[index].Green, 10);
-    WS2812_Helper_Reduce(mMoveLightArray_1[index].Blue, 10);
+//    WS2812_Helper_Reduce(mMoveLightArray_1[index].Red, 2);
+//    WS2812_Helper_Reduce(mMoveLightArray_1[index].Green, 2);
+//    WS2812_Helper_Reduce(mMoveLightArray_1[index].Blue, 10);
   }
 
   if(mRoofAnimationLeftToRight && mRoofAnimationIndex < mCountRgbLeds1) {
@@ -140,6 +140,6 @@ void Roof_WalkingLight() {
   }
 
   mMoveLightArray_1[mRoofAnimationIndex].Red = 100;
-  mMoveLightArray_1[mRoofAnimationIndex].Green = 0; //20;
-  mMoveLightArray_1[mRoofAnimationIndex].Blue = 0;//240;
+  mMoveLightArray_1[mRoofAnimationIndex].Green = 100; //20;
+  mMoveLightArray_1[mCountRgbLeds1 - mRoofAnimationIndex - 1].Blue = 100;//240;
 }

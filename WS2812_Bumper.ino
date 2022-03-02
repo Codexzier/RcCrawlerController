@@ -97,17 +97,17 @@ void Bumper_GoOnline_Fadeout() {
     return;
   }
 
-  for(uint8_t index = 0; index < mCountRgbLeds1; index++) {
+  for(uint8_t index = 0; index < mCountRgbLeds2; index++) {
     WS2812_Helper_Reduce(mMoveLightArray_Bumper[index].Red, 3);
     WS2812_Helper_Reduce(mMoveLightArray_Bumper[index].Green, 5);
-    WS2812_Helper_Reduce(mMoveLightArray_Bumper[index].Blue, 5);
+    WS2812_Helper_Reduce(mMoveLightArray_Bumper[index].Blue, 2);
   }
 
   if(mMoveLightArray_Bumper[0].Red == 0 &&
-     mMoveLightArray_Bumper[0].Red == 0 &&
-     mMoveLightArray_Bumper[0].Red == 0) {
+     mMoveLightArray_Bumper[0].Green == 0 &&
+     mMoveLightArray_Bumper[0].Blue == 0) {
       delay(300);
-      mRoof_GoOnline_Finish = true;
+      mBumper_GoOnline_Finish = true;
   }
 }
 
