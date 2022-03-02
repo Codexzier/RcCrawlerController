@@ -14,9 +14,16 @@
 #include <Adafruit_PWMServoDriver.h>
 
 // ========================================================================================
+// Setup
+
+// TODO: Setup of Roof Light Animation
+// TODO: Setup of Front Bumper Light Animation
+
+
+// ========================================================================================
 // Debuggen
-bool mSerialMonitor = false;                // Set this value true, for show all Value 
-                                           // on Serial Monitor.
+bool mSerialMonitor = false;                  // Set this value true, for show all Value 
+                                              // on Serial Monitor.
 
 // ========================================================================================
 // LED Control with PWM driver.
@@ -54,6 +61,27 @@ carLedType mLEDs[] = {
 };
 
 // ========================================================================================
+// Wird verwendet, um die Ziel RGB für den nächsten Stand vorzubereiten.
+typedef struct {
+  uint8_t Red;
+  uint8_t Green;
+  uint8_t Blue;
+
+  uint8_t TargetRed;
+  uint8_t TargetGreen;
+  uint8_t TargetBlue;
+  
+  bool Up;
+  bool On;
+
+  uint32_t GetColor() {
+    return ((uint32_t)Red << 16) | ((uint32_t)Green <<  8) | Blue;
+  }
+  
+} RgbSetup;
+
+
+// ========================================================================================
 // ws2812b - Status RGB
 const uint16_t mPinRgbStripe0 = 2;
 const int16_t mCountRgbLeds0 = 1;  
@@ -61,7 +89,7 @@ const int16_t mCountRgbLeds0 = 1;
 // 1. count of using RGB LEDs
 // 2. used on pin number
 // 3. Choose RGB, GRB oder BRG and used clock 400KHz oder 800KHz
-Adafruit_NeoPixel mPixels0 = Adafruit_NeoPixel(mCountRgbLeds0, mPinRgbStripe0, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel mPixels_Status = Adafruit_NeoPixel(mCountRgbLeds0, mPinRgbStripe0, NEO_GRB + NEO_KHZ800);
 
 // ========================================================================================
 // ws2812b - Stripe Roof
@@ -70,19 +98,14 @@ const uint16_t mCountRgbLeds1 = 20;
 const uint16_t mTailRgbLeds1 = 40;
 int16_t mRgbBrightnessMaxValue1 = 0;
 
-Adafruit_NeoPixel mPixels1 = Adafruit_NeoPixel(mCountRgbLeds1, mPinRgbStripe1, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel mPixels_Roof = Adafruit_NeoPixel(mCountRgbLeds1, mPinRgbStripe1, NEO_GRB + NEO_KHZ800);
 
 // RGB LEDs Array State
-uint8_t mMoveLightArray_1_Red[mCountRgbLeds1];
-uint8_t mMoveLightArray_1_Green[mCountRgbLeds1];
-uint8_t mMoveLightArray_1_Blue[mCountRgbLeds1];
-uint8_t mMoveLightArray_1_IndexRed = 0;
-uint8_t mMoveLightArray_1_IndexGreen = 0;
-uint8_t mMoveLightArray_1_IndexBlue = 0;
-bool mMoveLightArray_1_ForwardRed = true;
-bool mMoveLightArray_1_ForwardGreen = true;
-bool mMoveLightArray_1_ForwardBlue = true;
-int8_t mMoveLightArray_1_ColorSwitch = 8;
+RgbSetup mMoveLightArray_1[mCountRgbLeds1];
+
+// go online, only used to animate the roof by running setup method
+uint8_t mRoof_GoOnline_Index = 0;
+boolean mRoof_GoOnline_Finish = false;
 
 
 // ========================================================================================
@@ -93,12 +116,14 @@ const uint8_t mTailRgbLeds2 = 40;
 uint8_t mPixel_2_AnimationMode = 0;
 uint8_t mRgbBrightnessMaxValue2 = 0;
 
-Adafruit_NeoPixel mPixels2 = Adafruit_NeoPixel(mCountRgbLeds2, mPinRgbStripe2, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel mPixels_Bumper = Adafruit_NeoPixel(mCountRgbLeds2, mPinRgbStripe2, NEO_GRB + NEO_KHZ800);
 
 // RGB LEDs Array State
-uint8_t mMoveLightArray_2_Red[mCountRgbLeds2];
-uint8_t mMoveLightArray_2_Green[mCountRgbLeds2];
-uint8_t mMoveLightArray_2_Blue[mCountRgbLeds2];
+RgbSetup mMoveLightArray_Bumper[mCountRgbLeds2];
+
+// go online, only used to animate the roof by running setup method
+uint8_t mBumper_GoOnline_Index = 0;
+boolean mBumper_GoOnline_Finish = false;
 
 
 // ========================================================================================
@@ -157,14 +182,7 @@ void setup() {
     Serial.begin(115200);
   }
 
-  if(mSerialMonitor) {
-    Serial.println("Start RGB Strips for Pin 2, 3, 4");
-  }
-
-  mPixels0.begin();
-  mPixels1.begin();
-  mPixels2.begin();
-
+  // --------------------------------------------------------------------------------------
   if(mSerialMonitor) {
     Serial.println("Start PCA for all LEDs");
   }
@@ -174,7 +192,7 @@ void setup() {
   mCarLights.setPWMFreq(1600);
   Wire.setClock(400000);
 
- 
+  // --------------------------------------------------------------------------------------
   if(mSerialMonitor) {
     Serial.println("Setup Inputs");
   }
@@ -184,10 +202,50 @@ void setup() {
   pinMode(PIN_INPUT_C, INPUT);
   pinMode(PIN_INPUT_D, INPUT);
 
+  // --------------------------------------------------------------------------------------
+  if(mSerialMonitor) {
+    Serial.println("Start RGB Strips for Pin 2, 3, 4");
+  }
+
+  mPixels_Status.begin();
+  mPixels_Roof.begin();
+  mPixels_Bumper.begin();
+
   Status_On();
-  Roof_Offline();
-  Bumper_Offline();
+
+  // --------------------------------------------------------------------
+  // boot sequence roof - Fadein
+  while(!mRoof_GoOnline_Finish) {
+    UpdateTimeUp(false);
+   
+    Roof_GoOnline();
+    Roof_Update();
+  }
+  mRoof_GoOnline_Finish = false;
   
+  // boot sequence roof - Fadeout
+  while(!mRoof_GoOnline_Finish) {
+    UpdateTimeUp(false);
+    Roof_GoOnline_Fadeout();
+    Roof_Update();
+  }
+
+  // ---------------------------------
+  // boot sequence bumper - Fadein
+  while(!mBumper_GoOnline_Finish) {
+    UpdateTimeUp(false);
+    Bumper_GoOnline();
+    Bumper_Update();
+  }
+  mBumper_GoOnline_Finish = false;
+
+  // boot sequence roof - Fadeout
+  while(!mRoof_GoOnline_Finish) {
+    UpdateTimeUp(false);
+    Bumper_GoOnline_Fadeout();
+    Bumper_Update();
+  }
+    
   CarLight_Off();
   CarLight_Update();
   delay(1000);
@@ -250,8 +308,10 @@ void loop() {
     CarLight_Update();
     delay(100);
 
-    Roof_Offline();
-    Bumper_Offline();
+    // TODO: umstellen zu GoOnline und GoOnlineFadeout
+    // Oder Animation Warnlicht rot pulsierend
+//    Roof_Offline();
+//    Bumper_Offline();
 
     delay(100);
     UpdateTimeUp(false);
