@@ -67,6 +67,10 @@ typedef struct {
   uint8_t Green;
   uint8_t Blue;
 
+  uint8_t AltRed;
+  uint8_t AltGreen;
+  uint8_t AltBlue;
+
   uint8_t TargetRed;
   uint8_t TargetGreen;
   uint8_t TargetBlue;
@@ -119,7 +123,7 @@ uint8_t mRgbBrightnessMaxValue2 = 0;
 Adafruit_NeoPixel mPixels_Bumper = Adafruit_NeoPixel(mCountRgbLeds2, mPinRgbStripe2, NEO_GRB + NEO_KHZ800);
 
 // RGB LEDs Array State
-RgbSetup mMoveLightArray_Bumper[mCountRgbLeds2];
+RgbSetup mRgbSetup_Bumper[mCountRgbLeds2];
 
 // go online, only used to animate the roof by running setup method
 uint8_t mBumper_GoOnline_Index = 0;
@@ -131,7 +135,7 @@ boolean mBumper_GoOnline_Finish = false;
 #define PIN_INPUT_A A0                         // pwm input 1 for wheel
 #define PIN_INPUT_B A1                         // pwm input 2 for LED
 #define PIN_INPUT_C A2                         // pwm input 3 for LED RGB
-#define PIN_INPUT_D A3                         // pwm input 4 for Helligkeit
+#define PIN_INPUT_D A3                         // pwm input 4 for brightness / animation option
 //#define PIN_INPUT_E A6                       // pwm input 5 for drive
 
 boolean mVehicleModeSteerInvert = false;       // invert steering direction, only tracked vehicle 
@@ -166,6 +170,8 @@ uint16_t mReadValueD = 0;                      // input signal result from D
 uint16_t mReadValueE = 0;                      // input signal result from E
 
 // TODO: Save last used Strip Light Mode
+
+uint8_t mInputD_AnimationOption = 0;
 
 
 
@@ -257,12 +263,6 @@ bool mChangeLightsToOnOrOff = true;
 // ========================================================================================
 void loop() {
 
-  //CarLight_ShowSingleLedAndIndex();
-  //CarLight_ShowDimming();
-  //CarBlinker_SetTurnSignal(1000, mInputMinA, mInputMaxA, mInputMiddleA);
-//  Serial.print("C: "); Serial.print(mActiveCount, DEC);
-//  Serial.print(", mTimeToChange: "); Serial.println(mTimeToChange, DEC);
-
   mActiveCount++;
   if(UpdateTimeUp(false)) {
     // im testfall macht das signalisieren eines Signal Verlust kein Sinn.
@@ -271,21 +271,24 @@ void loop() {
   // alle aktuellen Einstellungen aktualisieren
   Bumper_Update();
   Roof_Update();
-  //Roof_Animations_Update();
   CarLight_Update();
+
+  // get Rc Inputs 
+  int inputValue_C = 2000;
 
   //CarLight_SetOnStandLightOrDriveLight(2000, mInputMinB, mInputMaxB, mInputMiddleB);
   //CarBlinker_SetTurnSignal(2000, mInputMinA, mInputMaxA, mInputMiddleA);
-  Bumper_SetAnimationMod(1500, mInputMinC, mInputMaxC, mInputMiddleC);
-  Roof_SetAnimationMod(1500, mInputMinC, mInputMaxC, mInputMiddleC);
+
+  //Bumper_SignalLost();
+  //Bumper_SetAnimationMod(inputValue_C, mInputMinC, mInputMaxC, mInputMiddleC);
+  //Roof_SignalLost();
+  Roof_SetAnimationMod(inputValue_C, mInputMinC, mInputMaxC, mInputMiddleC);
+  Roof_Blinker(2000, mInputMinA, mInputMaxA, mInputMiddleA);
 
   if(mSerialMonitor) {
     Serial.println("---------------------------------------------");
     delay(1);
   }
-
-
-  //Roof_Animators();
   
   return;
 
@@ -312,10 +315,8 @@ void loop() {
     CarLight_Update();
     delay(100);
 
-    // TODO: umstellen zu GoOnline und GoOnlineFadeout
-    // Oder Animation Warnlicht rot pulsierend
-//    Roof_Offline();
-//    Bumper_Offline();
+    Bumper_SignalLost();
+    Roof_SignalLost();
 
     delay(100);
     UpdateTimeUp(false);
@@ -331,6 +332,42 @@ void loop() {
   // roof and bumper rgb lights
   Bumper_SetAnimationMod(mReadValueC, mInputMinC, mInputMaxC, mInputMiddleC);
   Roof_SetAnimationMod(mReadValueC, mInputMinC, mInputMaxC, mInputMiddleC);
+  Roof_Blinker(mReadValueA, mInputMinA, mInputMaxA, mInputMiddleA);
+}
+
+void SetAnimationOption(int inputValue) {
+  
+  if(inputValue < 1100) {
+
+    mInputD_AnimationOption = 1;    
+    return;
+  }
+
+  if(inputValue > 1100 &&
+     inputValue < 1300) {
+
+    mInputD_AnimationOption = 2;
+    return;
+  }
+
+  if(inputValue > 1300 &&
+     inputValue < 1500) {
+
+    mInputD_AnimationOption = 3;
+    return;
+  }
+
+  if(inputValue > 1500 &&
+     inputValue < 1700) {
+
+    mInputD_AnimationOption = 4;
+    return;
+  }
+
+  // signal is near to 2000 or 1000
+  if(inputValue > 1700) {
+    mInputD_AnimationOption = 5;
+  }
 }
 
 // ========================================================================================

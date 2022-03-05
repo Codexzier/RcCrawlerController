@@ -1,9 +1,14 @@
 unsigned long mBumperLastCurrentTime = 0;
 
+// TODO: kann auch zentralsiiert werden
+unsigned long mBumperSpeed = 50;
+
 int8_t mBumperOfflineState = 0;
+bool mBumper_On_Prepare = false;
+bool mBumper_Off_Prepare = false;
 
 boolean Bumper_CurrentTimeup(){
-  if(mCurrentMillis - mBumperLastCurrentTime < 40) {
+  if(mCurrentMillis - mBumperLastCurrentTime < mBumperSpeed) {
     return true;
   }
   mBumperLastCurrentTime = mCurrentMillis;
@@ -14,6 +19,7 @@ boolean Bumper_CurrentTimeup(){
 // 
 void Bumper_SetAnimationMod(int inputValue, int minValue, int maxValue, int middleValue) {
 
+  mBumperSpeed = 40;
   if(Bumper_CurrentTimeup()) {
     return;
   }
@@ -24,6 +30,7 @@ void Bumper_SetAnimationMod(int inputValue, int minValue, int maxValue, int midd
     if(mSerialMonitor) {
       Serial.println("WS2812 RGB - Bumper Aus");
     }
+    mBumper_On_Prepare = false;
     Bumper_Off();
     return;
   }
@@ -35,6 +42,7 @@ void Bumper_SetAnimationMod(int inputValue, int minValue, int maxValue, int midd
     if(mSerialMonitor) {
       Serial.println("WS2812 RGB - Bumper An");
     }
+    mBumper_Off_Prepare = false;
     Bumper_On();
     return;
   }
@@ -44,7 +52,9 @@ void Bumper_SetAnimationMod(int inputValue, int minValue, int maxValue, int midd
     if(mSerialMonitor) {
       Serial.println("WS2812 RGB - Bumper Animation");
     }
-    
+
+    mBumper_Off_Prepare = false;
+    mBumper_On_Prepare = false;
     Bumper_WalkingLight();
   }
 }
@@ -55,9 +65,9 @@ void Bumper_Update(){
 
   for(uint8_t index = 0; index < mCountRgbLeds2; index++) {
     
-    uint8_t red = mMoveLightArray_Bumper[index].Red;
-    uint8_t green = mMoveLightArray_Bumper[index].Green;
-    uint8_t blue = mMoveLightArray_Bumper[index].Blue;
+    uint8_t red = mRgbSetup_Bumper[index].Red;
+    uint8_t green = mRgbSetup_Bumper[index].Green;
+    uint8_t blue = mRgbSetup_Bumper[index].Blue;
 
 //    red = map(mRgbBrightnessMaxValue2, 0, 255, 0, red);
 //    green = map(mRgbBrightnessMaxValue2, 0, 255, 0, green);
@@ -82,9 +92,9 @@ void Bumper_GoOnline(){
     return;
   }
   
-  mMoveLightArray_Bumper[mCountRgbLeds2 - mBumper_GoOnline_Index - 1].Red = 100;
-  mMoveLightArray_Bumper[mBumper_GoOnline_Index].Green = 0;
-  mMoveLightArray_Bumper[mBumper_GoOnline_Index].Blue = 100;
+  mRgbSetup_Bumper[mCountRgbLeds2 - mBumper_GoOnline_Index - 1].Red = 100;
+  mRgbSetup_Bumper[mBumper_GoOnline_Index].Green = 0;
+  mRgbSetup_Bumper[mBumper_GoOnline_Index].Blue = 100;
 
   if(mBumper_GoOnline_Index < mCountRgbLeds2) {
     mBumper_GoOnline_Index++;
@@ -98,51 +108,100 @@ void Bumper_GoOnline_Fadeout() {
   }
 
   for(uint8_t index = 0; index < mCountRgbLeds2; index++) {
-    WS2812_Helper_Reduce(mMoveLightArray_Bumper[index].Red, 3);
-    WS2812_Helper_Reduce(mMoveLightArray_Bumper[index].Green, 5);
-    WS2812_Helper_Reduce(mMoveLightArray_Bumper[index].Blue, 2);
+    WS2812_Helper_Reduce(mRgbSetup_Bumper[index].Red, 3);
+    WS2812_Helper_Reduce(mRgbSetup_Bumper[index].Green, 5);
+    WS2812_Helper_Reduce(mRgbSetup_Bumper[index].Blue, 2);
   }
 
-  if(mMoveLightArray_Bumper[0].Red == 0 &&
-     mMoveLightArray_Bumper[0].Green == 0 &&
-     mMoveLightArray_Bumper[0].Blue == 0) {
+  if(mRgbSetup_Bumper[0].Red == 0 &&
+     mRgbSetup_Bumper[0].Green == 0 &&
+     mRgbSetup_Bumper[0].Blue == 0) {
       delay(300);
       mBumper_GoOnline_Finish = true;
   }
+}
+
+void Bumper_FadeToTarget(uint8_t index){
+  uint8_t red = mRgbSetup_Bumper[index].Red;
+  uint8_t green = mRgbSetup_Bumper[index].Green;
+  uint8_t blue = mRgbSetup_Bumper[index].Blue;
+
+  if(red > mRgbSetup_Bumper[index].TargetRed){
+    red--;
+  }
+  if(red < mRgbSetup_Bumper[index].TargetRed){
+    red++;
+  }
+
+  if(green > mRgbSetup_Bumper[index].TargetGreen){
+    green--;
+  }
+  if(green < mRgbSetup_Bumper[index].TargetGreen){
+    green++;
+  }
+
+  if(blue > mRgbSetup_Bumper[index].TargetBlue){
+    blue--;
+  }
+  if(blue < mRgbSetup_Bumper[index].TargetBlue){
+    blue++;
+  }
+
+  mRgbSetup_Bumper[index].Red = red;
+  mRgbSetup_Bumper[index].Green = green;
+  mRgbSetup_Bumper[index].Blue = blue;
 }
 
 // ========================================================================================
 // Set first RGB LED on Front Bumper.
 void Bumper_On() {
 
+  Bumper_On_Prepare();
+  
   for(uint8_t index = 0; index < mCountRgbLeds2; index++) {
-    
-    mMoveLightArray_Bumper[index].Red = 100;
-    mMoveLightArray_Bumper[index].Green = 234;
-    mMoveLightArray_Bumper[index].Blue = 100;
+     Bumper_FadeToTarget(index);
+  }
+}
+
+void Bumper_On_Prepare(){
+  
+  if(mBumper_On_Prepare) {
+    return;
   }
   
-//  for(int8_t index = 0; index < mCountRgbLeds2; index++) {
-//    mPixels_Bumper.setPixelColor(index, mPixels_Bumper.Color(100, 234, 100));
-//  }
-//  mPixels_Bumper.show();
+  for(uint8_t index = 0; index < mCountRgbLeds2; index++) {
+    mRgbSetup_Bumper[index].TargetRed = 100;
+    mRgbSetup_Bumper[index].TargetGreen = 100;
+    mRgbSetup_Bumper[index].TargetBlue = 100;
+  }
+  
+  mBumper_On_Prepare = true;
 }
 
 // ========================================================================================
 // set all off
 void Bumper_Off() {
 
+  Bumper_Off_Prepare();
+  
   for(uint8_t index = 0; index < mCountRgbLeds2; index++) {
-    
-    mMoveLightArray_Bumper[index].Red = 50;
-    mMoveLightArray_Bumper[index].Green = 50;
-    mMoveLightArray_Bumper[index].Blue = 50;
+    Bumper_FadeToTarget(index);
+  }
+}
+
+void Bumper_Off_Prepare() {
+  
+  if(mBumper_Off_Prepare) {
+    return;
   }
   
-//  for(int8_t index = 0; index < mCountRgbLeds2; index++) {
-//    mPixels_Bumper.setPixelColor(index, mPixels_Bumper.Color(0, 0, 0));
-//  }
-//  mPixels_Bumper.show();
+  for(uint8_t index = 0; index < mCountRgbLeds2; index++) {
+    mRgbSetup_Bumper[index].TargetRed = 0;
+    mRgbSetup_Bumper[index].TargetGreen = 0;
+    mRgbSetup_Bumper[index].TargetBlue = 0;
+  }
+  
+  mBumper_Off_Prepare = true;
 }
 
 int8_t mBumperAnimationIndex = 0;
@@ -151,9 +210,9 @@ bool mBumperAnimationLeftToRight = true;
 void Bumper_WalkingLight() {
 
   for(uint8_t index = 0; index < mCountRgbLeds2; index++) {
-    WS2812_Helper_Reduce(mMoveLightArray_Bumper[index].Red, 30);
-    WS2812_Helper_Reduce(mMoveLightArray_Bumper[index].Green, 30);
-    WS2812_Helper_Reduce(mMoveLightArray_Bumper[index].Blue, 30);
+    WS2812_Helper_Reduce(mRgbSetup_Bumper[index].Red, 30);
+    WS2812_Helper_Reduce(mRgbSetup_Bumper[index].Green, 30);
+    WS2812_Helper_Reduce(mRgbSetup_Bumper[index].Blue, 30);
   }
 
   if(mBumperAnimationLeftToRight && mBumperAnimationIndex < mCountRgbLeds2) {
@@ -170,7 +229,47 @@ void Bumper_WalkingLight() {
     }
   }
 
-  mMoveLightArray_Bumper[mBumperAnimationIndex].Red = 156;
-  mMoveLightArray_Bumper[mBumperAnimationIndex].Green = 0;
-  mMoveLightArray_Bumper[mBumperAnimationIndex].Blue = 255;
+  mRgbSetup_Bumper[mBumperAnimationIndex].Red = 156;
+  mRgbSetup_Bumper[mBumperAnimationIndex].Green = 0;
+  mRgbSetup_Bumper[mBumperAnimationIndex].Blue = 255;
+}
+
+void Bumper_SignalLost(){
+
+  mBumperSpeed = 10;
+  if(Bumper_CurrentTimeup()) {
+    return;
+  }
+
+  if(mRgbSetup_Bumper[mBumperAnimationIndex].Red == 0 &&
+    mRgbSetup_Bumper[mBumperAnimationIndex].Green == 0 &&
+    mRgbSetup_Bumper[mBumperAnimationIndex].Blue == 0) {
+    
+    for(uint8_t index = 0; index < mCountRgbLeds2; index++) {
+      mRgbSetup_Bumper[index].TargetRed = 100;
+      mRgbSetup_Bumper[index].TargetGreen = 0;
+      mRgbSetup_Bumper[index].TargetBlue = 0;
+    }
+  }
+  
+  if(mRgbSetup_Bumper[mBumperAnimationIndex].Red >= 100 &&
+    mRgbSetup_Bumper[mBumperAnimationIndex].Green == 0 &&
+    mRgbSetup_Bumper[mBumperAnimationIndex].Blue == 0) {
+
+     for(uint8_t index = 0; index < mCountRgbLeds2; index++) {
+      mRgbSetup_Bumper[index].TargetRed = 0;
+      mRgbSetup_Bumper[index].TargetGreen = 0;
+      mRgbSetup_Bumper[index].TargetBlue = 0;
+    }
+  }
+
+  for(uint8_t index = 0; index < mCountRgbLeds2; index++) {
+     Bumper_FadeToTarget(index);
+  }
+
+  if(mSerialMonitor) {
+      Serial.print("Bumper Signal Lost: ");
+      Serial.println(mRgbSetup_Bumper[0].Red, DEC);
+  }
+  
 }

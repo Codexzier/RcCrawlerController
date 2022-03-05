@@ -1,7 +1,9 @@
 unsigned long mRoofLastCurrentTime = 0;
+unsigned long mRoofLastCurrentTime2 = 0;
 
 // TODO: kann auch zentralsiiert werden
 unsigned long mRoofSpeed = 50;
+unsigned long mRoofSpeed2 = 40;
 
 bool mRoof_On_Prepare = false;
 bool mRoof_Off_Prepare = false;
@@ -11,6 +13,14 @@ boolean Roof_CurrentTimeup(){
     return true;
   }
   mRoofLastCurrentTime = mCurrentMillis;
+  return false;
+}
+
+boolean Roof_CurrentTimeup2(){
+  if(mCurrentMillis - mRoofLastCurrentTime2 < mRoofSpeed) {
+    return true;
+  }
+  mRoofLastCurrentTime2 = mCurrentMillis;
   return false;
 }
 
@@ -45,7 +55,7 @@ void Roof_SetAnimationMod(int inputValue, int minValue, int maxValue, int middle
 
     mRoof_Off_Prepare = false;
     mRoof_On_Prepare = false;
-    Roof_WalkingLight();
+    Roof_PulseLight();
   }
 }
 
@@ -126,9 +136,9 @@ void Roof_GoOnline_Fadeout() {
 }
 
 void Roof_FadeToTarget(uint8_t index){
-  uint8_t red = mRgbSetup_Roof[index].Red;
-  uint8_t green = mRgbSetup_Roof[index].Green;
-  uint8_t blue = mRgbSetup_Roof[index].Blue;
+  uint8_t red = mRgbSetup_Roof[index].AltRed;
+  uint8_t green = mRgbSetup_Roof[index].AltGreen;
+  uint8_t blue = mRgbSetup_Roof[index].AltBlue;
 
   if(red > mRgbSetup_Roof[index].TargetRed){
     red--;
@@ -154,6 +164,9 @@ void Roof_FadeToTarget(uint8_t index){
   mRgbSetup_Roof[index].Red = red;
   mRgbSetup_Roof[index].Green = green;
   mRgbSetup_Roof[index].Blue = blue;
+  mRgbSetup_Roof[index].AltRed = red;
+  mRgbSetup_Roof[index].AltGreen = green;
+  mRgbSetup_Roof[index].AltBlue = blue;
 }
 
 // ========================================================================================
@@ -164,9 +177,6 @@ void Roof_On() {
   
   for(uint8_t index = 0; index < mCountRgbLeds1; index++) {
     Roof_FadeToTarget(index);
-//    mRgbSetup_Roof[index].Red = 100;
-//    mRgbSetup_Roof[index].Green = 100;
-//    mRgbSetup_Roof[index].Blue = 100;
   }
 }
 
@@ -186,6 +196,8 @@ void Roof_On_Prepare(){
 }
 
 void Roof_Off() {
+
+  Roof_Off_Prepare();
   
   for(uint8_t index = 0; index < mCountRgbLeds1; index++) {
     mRgbSetup_Roof[index].Red = 0;
@@ -215,12 +227,15 @@ int8_t mRoofAnimationIndex2 = 0;
 bool mRoofAnimationLeftToRight = true;
 bool mRoofAnimationChangedLeftRightSide = true;
 
-void Roof_WalkingLight() {
+void Roof_PulseLight() {
     
   for(uint8_t index = 0; index < mCountRgbLeds1; index++) {
     WS2812_Helper_Reduce(mRgbSetup_Roof[index].Red, 5);
     WS2812_Helper_Reduce(mRgbSetup_Roof[index].Green, 4);
     WS2812_Helper_Reduce(mRgbSetup_Roof[index].Blue, 5);
+    WS2812_Helper_Reduce(mRgbSetup_Roof[index].AltRed, 5);
+    WS2812_Helper_Reduce(mRgbSetup_Roof[index].AltGreen, 4);
+    WS2812_Helper_Reduce(mRgbSetup_Roof[index].AltBlue, 5);
   }
 
   if(mRoofAnimationLeftToRight && mRoofAnimationIndex < mCountRgbLeds1) {
@@ -266,12 +281,18 @@ void Roof_WalkingLight() {
       mRgbSetup_Roof[moveLeft].Red = red;
       mRgbSetup_Roof[moveLeft].Green = green;
       mRgbSetup_Roof[moveLeft].Blue = blue;
+      mRgbSetup_Roof[moveLeft].AltRed = red;
+      mRgbSetup_Roof[moveLeft].AltGreen = green;
+      mRgbSetup_Roof[moveLeft].AltBlue = blue;
     }
     
     if(moveRight > -1) {
       mRgbSetup_Roof[moveRight].Red = red;
       mRgbSetup_Roof[moveRight].Green = green;
       mRgbSetup_Roof[moveRight].Blue = blue;
+      mRgbSetup_Roof[moveRight].AltRed = red;
+      mRgbSetup_Roof[moveRight].AltGreen = green;
+      mRgbSetup_Roof[moveRight].AltBlue = blue;
     }
   }
   else {
@@ -279,13 +300,155 @@ void Roof_WalkingLight() {
       mRgbSetup_Roof[moveRight].Red = red;
       mRgbSetup_Roof[moveRight].Green = green;
       mRgbSetup_Roof[moveRight].Blue = blue;
+      mRgbSetup_Roof[moveRight].AltRed = red;
+      mRgbSetup_Roof[moveRight].AltGreen = green;
+      mRgbSetup_Roof[moveRight].AltBlue = blue;
     }
     
     if(moveRight > -1) {
       mRgbSetup_Roof[moveLeft].Red = red;
       mRgbSetup_Roof[moveLeft].Green = green;
       mRgbSetup_Roof[moveLeft].Blue = blue;
+      mRgbSetup_Roof[moveLeft].AltRed = red;
+      mRgbSetup_Roof[moveLeft].AltGreen = green;
+      mRgbSetup_Roof[moveLeft].AltBlue = blue;
     }
   }
+}
+
+uint8_t mRed = 100;
+uint8_t mRedSec = 0;
   
+void Roof_SignalLost(){
+  
+  mRoofSpeed = 5;
+  if(Roof_CurrentTimeup()) {
+    return;
+  }
+
+  uint16_t middle = mCountRgbLeds1 / 2;
+
+  if(mRgbSetup_Roof[0].Red == 0 &&
+    mRgbSetup_Roof[0].Green == 0 &&
+    mRgbSetup_Roof[0].Blue == 0) {
+      mRed = 100;
+      mRedSec = 0;
+  }
+  
+  if(mRgbSetup_Roof[0].Red >= 100 &&
+    mRgbSetup_Roof[0].Green == 0 &&
+    mRgbSetup_Roof[0].Blue == 0) {
+      mRed = 0;
+      mRedSec = 100;
+  }
+  
+  for(uint8_t index = 0; index < mCountRgbLeds1; index++) {
+    
+    if(index < middle) {
+      mRgbSetup_Roof[index].TargetRed = mRed;
+      mRgbSetup_Roof[index].TargetGreen = 0;
+      mRgbSetup_Roof[index].TargetBlue = 0;
+    }
+    else {
+      mRgbSetup_Roof[index].TargetRed = mRedSec;
+      mRgbSetup_Roof[index].TargetGreen = 0;
+      mRgbSetup_Roof[index].TargetBlue = 0;
+    }
+  }
+
+  for(uint8_t index = 0; index < mCountRgbLeds1; index++) {
+    Roof_FadeToTarget(index);
+  }  
+
+  if(mSerialMonitor) {
+      Serial.print("Roof Signal Lost: ");
+      Serial.println(mRgbSetup_Roof[0].Red, DEC);
+      Serial.print("Roof Signal Lost Target: ");
+      Serial.println(mRgbSetup_Roof[0].TargetRed, DEC);
+      Serial.print("Roof Signal Lost: ");
+      Serial.println(mRgbSetup_Roof[10].Red, DEC);
+      Serial.print("Roof Signal Lost Target: ");
+      Serial.println(mRgbSetup_Roof[10].TargetRed, DEC);
+  }
+}
+
+uint8_t mRoof_State = 0;
+uint8_t mRoof_Blinker_Red = 100;
+uint8_t mRoof_Blinker_Green = 100;
+uint8_t mRoof_Blinker_Blue = 0;
+
+void Roof_Blinker(int inputValue, int minValue, int maxValue, int middleValue){
+  
+  if(Roof_CurrentTimeup2()) {
+    return;
+  }
+
+  if(mRoof_State == 0) {
+    mRoof_Blinker_Red = 100;
+    mRoof_Blinker_Green = 100;
+    mRoof_Blinker_Blue = 0;
+  }
+  
+  if(mRoof_State >= 25) {
+    mRoof_Blinker_Red = 0;
+    mRoof_Blinker_Green = 0;
+    mRoof_Blinker_Blue = 0;
+  }
+
+  if(mRoof_State >= 50) {
+    mRoof_State = 0;
+  }
+  else {
+    mRoof_State++;
+  }
+
+  // set left
+  if(inputValue >= middleValue + mDeathbandPlusMinus) {
+    
+    if(mSerialMonitor) {
+      Serial.println("Blinker LEFT");
+    }
+
+    for(uint8_t index = 0; index < 3; index++) {
+      if(mRoof_Blinker_Red == 0 &&
+        mRoof_Blinker_Green == 0 &&
+        mRoof_Blinker_Blue == 0) {
+        mRgbSetup_Roof[index].Red = mRgbSetup_Roof[index].AltRed;
+        mRgbSetup_Roof[index].Green = mRgbSetup_Roof[index].AltGreen;
+        mRgbSetup_Roof[index].Blue = mRgbSetup_Roof[index].AltBlue;
+      }
+      else {
+        mRgbSetup_Roof[index].Red = mRoof_Blinker_Red;
+        mRgbSetup_Roof[index].Green = mRoof_Blinker_Green;
+        mRgbSetup_Roof[index].Blue = mRoof_Blinker_Blue;
+      }
+    }
+
+    return;
+  }
+
+  // set right
+  if(inputValue <= middleValue - mDeathbandPlusMinus) {
+
+    if(mSerialMonitor) {
+      Serial.println("Blinker RIGHT");
+    }
+
+    for(uint8_t index = mCountRgbLeds1 - 3; index < mCountRgbLeds1; index++) {
+      if(mRoof_Blinker_Red == 0 &&
+        mRoof_Blinker_Green == 0 &&
+        mRoof_Blinker_Blue == 0) {
+        mRgbSetup_Roof[index].Red = mRgbSetup_Roof[index].TargetRed;
+        mRgbSetup_Roof[index].Green = mRgbSetup_Roof[index].TargetGreen;
+        mRgbSetup_Roof[index].Blue = mRgbSetup_Roof[index].TargetBlue;
+      }
+      else {
+        mRgbSetup_Roof[index].Red = mRoof_Blinker_Red;
+        mRgbSetup_Roof[index].Green = mRoof_Blinker_Green;
+        mRgbSetup_Roof[index].Blue = mRoof_Blinker_Blue;
+      }
+    }
+
+    return;
+  }
 }
