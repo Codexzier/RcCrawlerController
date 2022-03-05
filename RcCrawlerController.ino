@@ -101,7 +101,7 @@ int16_t mRgbBrightnessMaxValue1 = 0;
 Adafruit_NeoPixel mPixels_Roof = Adafruit_NeoPixel(mCountRgbLeds1, mPinRgbStripe1, NEO_GRB + NEO_KHZ800);
 
 // RGB LEDs Array State
-RgbSetup mMoveLightArray_1[mCountRgbLeds1];
+RgbSetup mRgbSetup_Roof[mCountRgbLeds1];
 
 // go online, only used to animate the roof by running setup method
 uint8_t mRoof_GoOnline_Index = 0;
@@ -217,7 +217,6 @@ void setup() {
   // boot sequence roof - Fadein
   while(!mRoof_GoOnline_Finish) {
     UpdateTimeUp(false);
-   
     Roof_GoOnline();
     Roof_Update();
   }
@@ -269,20 +268,25 @@ void loop() {
     // im testfall macht das signalisieren eines Signal Verlust kein Sinn.
   }
 
-  //CarLight_SetOnStandLightOrDriveLight(2000, mInputMinB, mInputMaxB, mInputMiddleB);
-  //CarBlinker_SetTurnSignal(2000, mInputMinA, mInputMaxA, mInputMiddleA);
-  Bumper_SetAnimationMod(2000, mInputMinC, mInputMaxC, mInputMiddleC);
-  Roof_SetAnimationMod(2000, mInputMinC, mInputMaxC, mInputMiddleC);
-
   // alle aktuellen Einstellungen aktualisieren
   Bumper_Update();
   Roof_Update();
+  //Roof_Animations_Update();
   CarLight_Update();
+
+  //CarLight_SetOnStandLightOrDriveLight(2000, mInputMinB, mInputMaxB, mInputMiddleB);
+  //CarBlinker_SetTurnSignal(2000, mInputMinA, mInputMaxA, mInputMiddleA);
+  Bumper_SetAnimationMod(1500, mInputMinC, mInputMaxC, mInputMiddleC);
+  Roof_SetAnimationMod(1500, mInputMinC, mInputMaxC, mInputMiddleC);
 
   if(mSerialMonitor) {
     Serial.println("---------------------------------------------");
     delay(1);
   }
+
+
+  //Roof_Animators();
+  
   return;
 
   //###################################################
