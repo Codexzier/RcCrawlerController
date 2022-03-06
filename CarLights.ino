@@ -14,7 +14,7 @@ void CarLight_ShowSingleLedAndIndex(){
     mShowSingleLedAndIndex_Index = 6;
   }
 
-  Serial.print("LED INDEX: "); Serial.println(mShowSingleLedAndIndex_Index, DEC);
+  //Serial.print("LED INDEX: "); Serial.println(mShowSingleLedAndIndex_Index, DEC);
 
   mCarLights.setPWM(mShowSingleLedAndIndex_Index, 0, 0);
   delay(4000);
@@ -27,7 +27,7 @@ void CarLight_ShowDimming() {
 
     int8_t steps = 100;
 uint16_t lastOn = 0;
-Serial.println("FADEIN");
+//Serial.println("FADEIN");
 
   for(uint16_t brightness = 1; brightness < steps; brightness++) {
     uint16_t on = map(brightness, 0, steps, 0, 4096);
@@ -35,7 +35,7 @@ Serial.println("FADEIN");
       on = lastOn;
     }
     lastOn = on;
-    Serial.print("FADEIN LED Brightness: "); Serial.println(on, DEC);
+    //Serial.print("FADEIN LED Brightness: "); Serial.println(on, DEC);
     for (uint8_t pwmnum=0; pwmnum < mLEDs_Size; pwmnum++) {
       
       mCarLights.setPWM(
@@ -46,17 +46,17 @@ Serial.println("FADEIN");
     delay(30);
   }
   
-Serial.print("to on Last LED Brightness: "); Serial.println(lastOn, DEC);
-  delay(1000);
+//Serial.print("to on Last LED Brightness: "); Serial.println(lastOn, DEC);
+//  delay(1000);
 
-Serial.println("FADEOUT");
+//Serial.println("FADEOUT");
   for(uint16_t brightness = 0; brightness < steps; brightness++) {
     uint16_t on = map(brightness, 0, steps, 4096, 0);
     if(lastOn < on) {
       on = lastOn;
     }
 lastOn = on;
-    Serial.print("FADEOUT LED Brightness: "); Serial.println(on, DEC);
+    //Serial.print("FADEOUT LED Brightness: "); Serial.println(on, DEC);
     for (uint8_t pwmnum=0; pwmnum < mLEDs_Size; pwmnum++) {
       
       mCarLights.setPWM(
@@ -112,14 +112,14 @@ void CarLight_Update() {
 
   for(int index = 0; index < mLEDs_Size; index++) {
     if(mSerialMonitor) {
-      Serial.print("CarLight INDEX: "); 
-      Serial.print(index, DEC);
-      Serial.print(", Mapped Port: ");
-      Serial.print(mLEDs[index].portNumber, DEC);
-      Serial.print(", LED Value: ");
-      Serial.print(mLEDs[index].on, DEC);
-      Serial.print(", Step value: ");
-      Serial.println(mLEDs[index].noChanged, DEC);
+//      Serial.print("CarLight INDEX: "); 
+//      Serial.print(index, DEC);
+//      Serial.print(", Mapped Port: ");
+//      Serial.print(mLEDs[index].portNumber, DEC);
+//      Serial.print(", LED Value: ");
+//      Serial.print(mLEDs[index].on, DEC);
+//      Serial.print(", Step value: ");
+//      Serial.println(mLEDs[index].noChanged, DEC);
     }
 
     if(mLEDs[index].lastOnValue != mLEDs[index].on) {

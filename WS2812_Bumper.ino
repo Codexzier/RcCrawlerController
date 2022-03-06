@@ -28,7 +28,7 @@ void Bumper_SetAnimationMod(int inputValue, int minValue, int maxValue, int midd
   if(inputValue < 1000) {//minValue + mThresholdValue) {
 
     if(mSerialMonitor) {
-      Serial.println("WS2812 RGB - Bumper Aus");
+      //Serial.println("WS2812 RGB - Bumper Aus");
     }
     mBumper_On_Prepare = false;
     Bumper_Off();
@@ -40,7 +40,7 @@ void Bumper_SetAnimationMod(int inputValue, int minValue, int maxValue, int midd
      inputValue < middleValue + mThresholdValue) {
 
     if(mSerialMonitor) {
-      Serial.println("WS2812 RGB - Bumper An");
+      //Serial.println("WS2812 RGB - Bumper An");
     }
     mBumper_Off_Prepare = false;
     Bumper_On();
@@ -50,7 +50,7 @@ void Bumper_SetAnimationMod(int inputValue, int minValue, int maxValue, int midd
   // bumper animation for walking light (signal is near to 2000 or 1000)
   if(inputValue > maxValue - mThresholdValue) {
     if(mSerialMonitor) {
-      Serial.println("WS2812 RGB - Bumper Animation");
+      //Serial.println("WS2812 RGB - Bumper Animation");
     }
 
     mBumper_Off_Prepare = false;

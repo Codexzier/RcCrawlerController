@@ -199,9 +199,10 @@ void Roof_Off() {
   Roof_Off_Prepare();
   
   for(uint8_t index = 0; index < mCountRgbLeds1; index++) {
-    mRgbSetup_Roof[index].Red = 0;
-    mRgbSetup_Roof[index].Green = 0;
-    mRgbSetup_Roof[index].Blue = 0;
+    Roof_FadeToTarget(index);
+//    mRgbSetup_Roof[index].Red = 0;
+//    mRgbSetup_Roof[index].Green = 0;
+//    mRgbSetup_Roof[index].Blue = 0;
   }
 }
 

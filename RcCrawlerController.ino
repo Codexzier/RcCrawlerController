@@ -206,10 +206,8 @@ void setup() {
     Serial.println("Setup Inputs");
   }
 
-  pinMode(PIN_INPUT_A, INPUT);
-  pinMode(PIN_INPUT_B, INPUT);
-  pinMode(PIN_INPUT_C, INPUT);
-  pinMode(PIN_INPUT_D, INPUT);
+  RcInput_Setup();
+
 
   // --------------------------------------------------------------------------------------
   if(mSerialMonitor) {
@@ -333,10 +331,10 @@ void loop() {
   SetAnimationOption(mReadValueD);
   
   // blinker
-  //CarBlinker_SetTurnSignal(mReadValueA, mInputMinA, mInputMaxA, mInputMiddleA);
+  CarBlinker_SetTurnSignal(mReadValueA, mInputMinA, mInputMaxA, mInputMiddleA);
 
   // lights
-  //CarLight_SetOnStandLightOrDriveLight(mReadValueB, mInputMinB, mInputMaxB, mInputMiddleB);
+  CarLight_SetOnStandLightOrDriveLight(mReadValueB, mInputMinB, mInputMaxB, mInputMiddleB);
 
   // roof and bumper rgb lights
   Bumper_SetAnimationMod(mReadValueC, mInputMinC, mInputMaxC, mInputMiddleC);
@@ -390,9 +388,17 @@ bool UpdateTimeUp(bool f){
   mCurrentMillis = millis();
 
   boolean result = false;
-  if(mCurrentMillis - mLastMillis > 1000) {
+
+  unsigned long timeGone = mCurrentMillis - mLastMillis;
+  
+  if(timeGone > 1000) {
     mLastMillis = mCurrentMillis;
     result = true;
+  }
+
+  if(mSerialMonitor) {
+    Serial.print("Millis: ");
+    Serial.println(timeGone, DEC);
   }
   
   if(result && f) {
