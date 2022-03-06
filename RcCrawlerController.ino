@@ -275,15 +275,19 @@ void loop() {
 
   // get Rc Inputs 
   int inputValue_C = 2000;
+  int inputValue_D = 1200;
 
   //CarLight_SetOnStandLightOrDriveLight(2000, mInputMinB, mInputMaxB, mInputMiddleB);
   //CarBlinker_SetTurnSignal(2000, mInputMinA, mInputMaxA, mInputMiddleA);
 
+  SetAnimationOption(inputValue_D);
+  
   //Bumper_SignalLost();
-  //Bumper_SetAnimationMod(inputValue_C, mInputMinC, mInputMaxC, mInputMiddleC);
+  Bumper_SetAnimationMod(inputValue_C, mInputMinC, mInputMaxC, mInputMiddleC);
+  
   //Roof_SignalLost();
   Roof_SetAnimationMod(inputValue_C, mInputMinC, mInputMaxC, mInputMiddleC);
-  Roof_Blinker(2000, mInputMinA, mInputMaxA, mInputMiddleA);
+  Roof_Blinker(1500, mInputMinA, mInputMaxA, mInputMiddleA);
 
   if(mSerialMonitor) {
     Serial.println("---------------------------------------------");
@@ -323,6 +327,8 @@ void loop() {
     return;
   }
 
+  SetAnimationOption(mReadValueD);
+  
   // blinker
   CarBlinker_SetTurnSignal(mReadValueA, mInputMinA, mInputMaxA, mInputMiddleA);
 

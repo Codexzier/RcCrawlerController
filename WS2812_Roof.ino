@@ -55,7 +55,15 @@ void Roof_SetAnimationMod(int inputValue, int minValue, int maxValue, int middle
 
     mRoof_Off_Prepare = false;
     mRoof_On_Prepare = false;
-    Roof_PulseLight();
+
+    switch(mInputD_AnimationOption) {
+      case(1): { Roof_PulseLight(); break; }
+      case(2): { Roof_GlitterEffect(); break; }
+      default: {
+        Roof_GlitterEffect();
+        break;
+      }
+    }
   }
 }
 
@@ -63,15 +71,12 @@ void Roof_Update(){
   
   for(uint8_t index = 0; index < mCountRgbLeds1; index++) {
 
-    uint8_t red = mRgbSetup_Roof[index].Red;
-    uint8_t green = mRgbSetup_Roof[index].Green;
-    uint8_t blue = mRgbSetup_Roof[index].Blue;
-
-//    red = map(mRgbBrightnessMaxValue2, 0, 255, 0, red);
-//    green = map(mRgbBrightnessMaxValue2, 0, 255, 0, green);
-//    blue = map(mRgbBrightnessMaxValue2, 0, 255, 0, blue);
-    
-    mPixels_Roof.setPixelColor(index, mPixels_Roof.Color(red, green, blue));
+//    uint8_t red = mRgbSetup_Roof[index].Red;
+//    uint8_t green = mRgbSetup_Roof[index].Green;
+//    uint8_t blue = mRgbSetup_Roof[index].Blue;
+//
+//    mPixels_Roof.setPixelColor(index, mPixels_Roof.Color(red, green, blue));
+    mPixels_Roof.setPixelColor(index, mRgbSetup_Roof[index].GetColor());
   }
   
   mPixels_Roof.show();
@@ -450,5 +455,111 @@ void Roof_Blinker(int inputValue, int minValue, int maxValue, int middleValue){
     }
 
     return;
+  }
+}
+
+void Roof_GlitterEffect(){
+
+  for(uint8_t index = 0; index < mCountRgbLeds1; index++) {
+    
+    if(mRgbSetup_Roof[index].Up) {
+      if(mSerialMonitor) {
+        Serial.println("mRgbSetup_Roof[index].Up");
+        Serial.print("mRgbSetup_Roof[index].Red ");
+        Serial.println(mRgbSetup_Roof[index].Red, DEC);
+        Serial.print("mRgbSetup_Roof[index].TargetRed ");
+        Serial.println(mRgbSetup_Roof[index].TargetRed, DEC);
+        Serial.print("mRgbSetup_Roof[index].Blue ");
+        Serial.println(mRgbSetup_Roof[index].Blue, DEC);
+      }
+
+      if(mRgbSetup_Roof[index].Red >= mRgbSetup_Roof[index].TargetRed &&
+         mRgbSetup_Roof[index].Green >= mRgbSetup_Roof[index].TargetGreen &&
+         mRgbSetup_Roof[index].Blue >= mRgbSetup_Roof[index].TargetBlue) {
+        mRgbSetup_Roof[index].Up = false;
+        mRgbSetup_Roof[index].TargetRed = 0;
+        mRgbSetup_Roof[index].TargetGreen = 0;
+        mRgbSetup_Roof[index].TargetBlue = 0;
+      }
+      else {
+
+        Roof_FadeToTarget(index);
+        continue;
+      }
+    }
+    
+    if(mRgbSetup_Roof[index].On && 
+      mRgbSetup_Roof[index].Red <= 10 &&
+      mRgbSetup_Roof[index].Green <= 10 &&
+      mRgbSetup_Roof[index].Blue <= 10) {
+        
+      mRgbSetup_Roof[index].On = false;
+      mRgbSetup_Roof[index].TargetRed = 0;
+      mRgbSetup_Roof[index].TargetGreen = 0;
+      mRgbSetup_Roof[index].TargetBlue = 0;
+    }
+    
+    WS2812_Helper_Reduce(mRgbSetup_Roof[index].Red, 5);
+    WS2812_Helper_Reduce(mRgbSetup_Roof[index].Green, 4);
+    WS2812_Helper_Reduce(mRgbSetup_Roof[index].Blue, 5);
+    WS2812_Helper_Reduce(mRgbSetup_Roof[index].AltRed, 5);
+    WS2812_Helper_Reduce(mRgbSetup_Roof[index].AltGreen, 4);
+    WS2812_Helper_Reduce(mRgbSetup_Roof[index].AltBlue, 5);
+    
+
+    if(mRgbSetup_Roof[index].On) {
+      if(mSerialMonitor) {
+        Serial.println("mRgbSetup_Roof[index].On");
+      }
+      continue;
+    }
+
+    int r = random(0, 10);
+    if(mSerialMonitor) {
+      Serial.print("Random value (0,10): ");
+      Serial.println(r, DEC);
+    }
+    
+    if(r > 8) {
+      
+      mRgbSetup_Roof[index].Up = true;
+      mRgbSetup_Roof[index].On = true;
+
+      int rColor = random(0, 5);
+      switch(rColor) {
+        case(0): {
+          mRgbSetup_Roof[index].TargetRed = 20;
+          mRgbSetup_Roof[index].TargetGreen = 120;
+          mRgbSetup_Roof[index].TargetBlue = 10;
+          break;
+        }
+        case(1): {
+          mRgbSetup_Roof[index].TargetRed = 0;
+          mRgbSetup_Roof[index].TargetGreen = 160;
+          mRgbSetup_Roof[index].TargetBlue = 10;
+          break;
+        }
+        case(2): {
+          mRgbSetup_Roof[index].TargetRed = 50;
+          mRgbSetup_Roof[index].TargetGreen = 160;
+          mRgbSetup_Roof[index].TargetBlue = 30;
+          break;
+        }
+        case(3): {
+          mRgbSetup_Roof[index].TargetRed = 10;
+          mRgbSetup_Roof[index].TargetGreen = 70;
+          mRgbSetup_Roof[index].TargetBlue = 10;
+          break;
+        }
+        default:{
+          mRgbSetup_Roof[index].TargetRed = 30;
+          mRgbSetup_Roof[index].TargetGreen = 60;
+          mRgbSetup_Roof[index].TargetBlue = 30;
+          break;
+        }
+      }
+    }
+
+    Roof_FadeToTarget(index);
   }
 }

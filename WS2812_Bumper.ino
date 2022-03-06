@@ -65,15 +65,16 @@ void Bumper_Update(){
 
   for(uint8_t index = 0; index < mCountRgbLeds2; index++) {
     
-    uint8_t red = mRgbSetup_Bumper[index].Red;
-    uint8_t green = mRgbSetup_Bumper[index].Green;
-    uint8_t blue = mRgbSetup_Bumper[index].Blue;
+//    uint8_t red = mRgbSetup_Bumper[index].Red;
+//    uint8_t green = mRgbSetup_Bumper[index].Green;
+//    uint8_t blue = mRgbSetup_Bumper[index].Blue;
 
 //    red = map(mRgbBrightnessMaxValue2, 0, 255, 0, red);
 //    green = map(mRgbBrightnessMaxValue2, 0, 255, 0, green);
 //    blue = map(mRgbBrightnessMaxValue2, 0, 255, 0, blue);
     
-    mPixels_Bumper.setPixelColor(index, mPixels_Bumper.Color(red, green, blue));
+//    mPixels_Bumper.setPixelColor(index, mPixels_Bumper.Color(red, green, blue));
+    mPixels_Bumper.setPixelColor(index, mRgbSetup_Bumper[index].GetColor());
   }
 
   mPixels_Bumper.show();
@@ -83,6 +84,7 @@ void Bumper_Update(){
 // used if the remote connection lost
 void Bumper_GoOnline(){
 
+  mBumperSpeed = 100;
   if(Bumper_CurrentTimeup()) {
     return;
   }
@@ -92,9 +94,20 @@ void Bumper_GoOnline(){
     return;
   }
   
-  mRgbSetup_Bumper[mCountRgbLeds2 - mBumper_GoOnline_Index - 1].Red = 100;
-  mRgbSetup_Bumper[mBumper_GoOnline_Index].Green = 0;
-  mRgbSetup_Bumper[mBumper_GoOnline_Index].Blue = 100;
+//  mRgbSetup_Bumper[mCountRgbLeds2 - mBumper_GoOnline_Index - 1].Red = 100;
+//  mRgbSetup_Bumper[mBumper_GoOnline_Index].Green = 0;
+//  mRgbSetup_Bumper[mBumper_GoOnline_Index].Blue = 100;
+
+  int8_t moveLeft = GetMoveLeft(mBumper_GoOnline_Index, mCountRgbLeds2);
+  int8_t moveRight = GetMoveRight(mBumper_GoOnline_Index, mCountRgbLeds2);
+
+  mRgbSetup_Bumper[moveLeft].Red = 20;
+  mRgbSetup_Bumper[moveLeft].Green = 100;
+  mRgbSetup_Bumper[moveLeft].Blue = 20;
+
+  mRgbSetup_Bumper[moveRight].Red = 20;
+  mRgbSetup_Bumper[moveRight].Green = 100;
+  mRgbSetup_Bumper[moveRight].Blue = 20;
 
   if(mBumper_GoOnline_Index < mCountRgbLeds2) {
     mBumper_GoOnline_Index++;
@@ -103,6 +116,7 @@ void Bumper_GoOnline(){
 
 void Bumper_GoOnline_Fadeout() {
 
+  mBumperSpeed = 40;
   if(Bumper_CurrentTimeup()) {
     return;
   }
