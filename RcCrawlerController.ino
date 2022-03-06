@@ -198,6 +198,9 @@ void setup() {
   mCarLights.setPWMFreq(1600);
   Wire.setClock(400000);
 
+  // set off
+  CarLight_SetOnStandLightOrDriveLight(1000, mInputMinB, mInputMaxB, mInputMiddleB);
+  
   // --------------------------------------------------------------------------------------
   if(mSerialMonitor) {
     Serial.println("Setup Inputs");
@@ -263,38 +266,38 @@ bool mChangeLightsToOnOrOff = true;
 // ========================================================================================
 void loop() {
 
-  mActiveCount++;
-  if(UpdateTimeUp(false)) {
-    // im testfall macht das signalisieren eines Signal Verlust kein Sinn.
-  }
+//  mActiveCount++;
+//  if(UpdateTimeUp(false)) {
+//    // im testfall macht das signalisieren eines Signal Verlust kein Sinn.
+//  }
 
-  // alle aktuellen Einstellungen aktualisieren
-  Bumper_Update();
-  Roof_Update();
-  CarLight_Update();
-
-  // get Rc Inputs 
-  int inputValue_C = 2000;
-  int inputValue_D = 1200;
-
-  //CarLight_SetOnStandLightOrDriveLight(2000, mInputMinB, mInputMaxB, mInputMiddleB);
-  //CarBlinker_SetTurnSignal(2000, mInputMinA, mInputMaxA, mInputMiddleA);
-
-  SetAnimationOption(inputValue_D);
-  
-  //Bumper_SignalLost();
-  Bumper_SetAnimationMod(inputValue_C, mInputMinC, mInputMaxC, mInputMiddleC);
-  
-  //Roof_SignalLost();
-  Roof_SetAnimationMod(inputValue_C, mInputMinC, mInputMaxC, mInputMiddleC);
-  Roof_Blinker(1500, mInputMinA, mInputMaxA, mInputMiddleA);
-
-  if(mSerialMonitor) {
-    Serial.println("---------------------------------------------");
-    delay(1);
-  }
-  
-  return;
+//  // alle aktuellen Einstellungen aktualisieren
+//  Bumper_Update();
+//  Roof_Update();
+//  CarLight_Update();
+//
+//  // get Rc Inputs 
+//  int inputValue_C = 2000;
+//  int inputValue_D = 1000;
+//
+//  //CarLight_SetOnStandLightOrDriveLight(2000, mInputMinB, mInputMaxB, mInputMiddleB);
+//  //CarBlinker_SetTurnSignal(2000, mInputMinA, mInputMaxA, mInputMiddleA);
+//
+//  SetAnimationOption(inputValue_D);
+//  
+//  //Bumper_SignalLost();
+//  Bumper_SetAnimationMod(inputValue_C, mInputMinC, mInputMaxC, mInputMiddleC);
+//  
+//  //Roof_SignalLost();
+//  Roof_SetAnimationMod(inputValue_C, mInputMinC, mInputMaxC, mInputMiddleC);
+//  Roof_Blinker(2000, mInputMinA, mInputMaxA, mInputMiddleA);
+//
+//  if(mSerialMonitor) {
+//    Serial.println("---------------------------------------------");
+//    delay(1);
+//  }
+//  
+//  return;
 
   //###################################################
   // Aktuell nicht verwendet
@@ -312,28 +315,28 @@ void loop() {
   // the current time goes up.
   if(UpdateTimeUp(true)) {
     
-    CarLight_SetOnBlinkers();
-    CarLight_Update();
-    delay(1000);
-    CarLight_SetOffBlinkers();
-    CarLight_Update();
-    delay(100);
-
-    Bumper_SignalLost();
-    Roof_SignalLost();
-
-    delay(100);
-    UpdateTimeUp(false);
-    return;
+//    CarLight_SetOnBlinkers();
+//    CarLight_Update();
+//    delay(1000);
+//    CarLight_SetOffBlinkers();
+//    CarLight_Update();
+//    delay(100);
+//
+//    Bumper_SignalLost();
+//    Roof_SignalLost();
+//
+//    delay(100);
+//    UpdateTimeUp(false);
+//    return;
   }
 
   SetAnimationOption(mReadValueD);
   
   // blinker
-  CarBlinker_SetTurnSignal(mReadValueA, mInputMinA, mInputMaxA, mInputMiddleA);
+  //CarBlinker_SetTurnSignal(mReadValueA, mInputMinA, mInputMaxA, mInputMiddleA);
 
   // lights
-  CarLight_SetOnStandLightOrDriveLight(mReadValueB, mInputMinB, mInputMaxB, mInputMiddleB);
+  //CarLight_SetOnStandLightOrDriveLight(mReadValueB, mInputMinB, mInputMaxB, mInputMiddleB);
 
   // roof and bumper rgb lights
   Bumper_SetAnimationMod(mReadValueC, mInputMinC, mInputMaxC, mInputMiddleC);

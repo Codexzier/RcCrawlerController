@@ -3,7 +3,7 @@ unsigned long mRoofLastCurrentTime2 = 0;
 
 // TODO: kann auch zentralsiiert werden
 unsigned long mRoofSpeed = 50;
-unsigned long mRoofSpeed2 = 40;
+unsigned long mRoofSpeed2 = 15;
 
 bool mRoof_On_Prepare = false;
 bool mRoof_Off_Prepare = false;
@@ -17,7 +17,7 @@ boolean Roof_CurrentTimeup(){
 }
 
 boolean Roof_CurrentTimeup2(){
-  if(mCurrentMillis - mRoofLastCurrentTime2 < mRoofSpeed) {
+  if(mCurrentMillis - mRoofLastCurrentTime2 < mRoofSpeed2) {
     return true;
   }
   mRoofLastCurrentTime2 = mCurrentMillis;
@@ -70,12 +70,6 @@ void Roof_SetAnimationMod(int inputValue, int minValue, int maxValue, int middle
 void Roof_Update(){
   
   for(uint8_t index = 0; index < mCountRgbLeds1; index++) {
-
-//    uint8_t red = mRgbSetup_Roof[index].Red;
-//    uint8_t green = mRgbSetup_Roof[index].Green;
-//    uint8_t blue = mRgbSetup_Roof[index].Blue;
-//
-//    mPixels_Roof.setPixelColor(index, mPixels_Roof.Color(red, green, blue));
     mPixels_Roof.setPixelColor(index, mRgbSetup_Roof[index].GetColor());
   }
   
@@ -383,7 +377,8 @@ uint8_t mRoof_Blinker_Green = 100;
 uint8_t mRoof_Blinker_Blue = 0;
 
 void Roof_Blinker(int inputValue, int minValue, int maxValue, int middleValue){
-  
+
+  mRoofSpeed2 = 20;
   if(Roof_CurrentTimeup2()) {
     return;
   }
@@ -394,22 +389,22 @@ void Roof_Blinker(int inputValue, int minValue, int maxValue, int middleValue){
     mRoof_Blinker_Blue = 0;
   }
   
-  if(mRoof_State >= 25) {
+  if(mRoof_State >= 10) {
     mRoof_Blinker_Red = 0;
     mRoof_Blinker_Green = 0;
     mRoof_Blinker_Blue = 0;
   }
 
-  if(mRoof_State >= 50) {
+  if(mRoof_State >= 20) {
     mRoof_State = 0;
   }
   else {
     mRoof_State++;
   }
 
-  // set left
-  if(inputValue >= middleValue + mDeathbandPlusMinus) {
-    
+  // set right
+  if(inputValue <= middleValue - mDeathbandPlusMinus) {
+  
     if(mSerialMonitor) {
       Serial.println("Blinker LEFT");
     }
@@ -432,8 +427,8 @@ void Roof_Blinker(int inputValue, int minValue, int maxValue, int middleValue){
     return;
   }
 
-  // set right
-  if(inputValue <= middleValue - mDeathbandPlusMinus) {
+  // set left
+  if(inputValue >= middleValue + mDeathbandPlusMinus) {
 
     if(mSerialMonitor) {
       Serial.println("Blinker RIGHT");
@@ -443,9 +438,9 @@ void Roof_Blinker(int inputValue, int minValue, int maxValue, int middleValue){
       if(mRoof_Blinker_Red == 0 &&
         mRoof_Blinker_Green == 0 &&
         mRoof_Blinker_Blue == 0) {
-        mRgbSetup_Roof[index].Red = mRgbSetup_Roof[index].TargetRed;
-        mRgbSetup_Roof[index].Green = mRgbSetup_Roof[index].TargetGreen;
-        mRgbSetup_Roof[index].Blue = mRgbSetup_Roof[index].TargetBlue;
+        mRgbSetup_Roof[index].Red = mRgbSetup_Roof[index].AltRed;
+        mRgbSetup_Roof[index].Green = mRgbSetup_Roof[index].AltGreen;
+        mRgbSetup_Roof[index].Blue = mRgbSetup_Roof[index].AltBlue;
       }
       else {
         mRgbSetup_Roof[index].Red = mRoof_Blinker_Red;
