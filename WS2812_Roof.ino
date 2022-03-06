@@ -80,7 +80,7 @@ void Roof_Update(){
 // used if the remote connection lost
 void Roof_GoOnline() {
 
-  mRoofSpeed = 50;
+  mRoofSpeed = 30;
   if(Roof_CurrentTimeup()) {
     return;
   }
@@ -186,9 +186,9 @@ void Roof_On_Prepare(){
   }
   
   for(uint8_t index = 0; index < mCountRgbLeds1; index++) {
-    mRgbSetup_Roof[index].TargetRed = 100;
-    mRgbSetup_Roof[index].TargetGreen = 100;
-    mRgbSetup_Roof[index].TargetBlue = 100;
+    mRgbSetup_Roof[index].TargetRed = 250;
+    mRgbSetup_Roof[index].TargetGreen = 250;
+    mRgbSetup_Roof[index].TargetBlue = 250;
   }
   
   mRoof_On_Prepare = true;
@@ -200,9 +200,6 @@ void Roof_Off() {
   
   for(uint8_t index = 0; index < mCountRgbLeds1; index++) {
     Roof_FadeToTarget(index);
-//    mRgbSetup_Roof[index].Red = 0;
-//    mRgbSetup_Roof[index].Green = 0;
-//    mRgbSetup_Roof[index].Blue = 0;
   }
 }
 
@@ -459,15 +456,6 @@ void Roof_GlitterEffect(){
   for(uint8_t index = 0; index < mCountRgbLeds1; index++) {
     
     if(mRgbSetup_Roof[index].Up) {
-      if(mSerialMonitor) {
-        Serial.println("mRgbSetup_Roof[index].Up");
-        Serial.print("mRgbSetup_Roof[index].Red ");
-        Serial.println(mRgbSetup_Roof[index].Red, DEC);
-        Serial.print("mRgbSetup_Roof[index].TargetRed ");
-        Serial.println(mRgbSetup_Roof[index].TargetRed, DEC);
-        Serial.print("mRgbSetup_Roof[index].Blue ");
-        Serial.println(mRgbSetup_Roof[index].Blue, DEC);
-      }
 
       if(mRgbSetup_Roof[index].Red >= mRgbSetup_Roof[index].TargetRed &&
          mRgbSetup_Roof[index].Green >= mRgbSetup_Roof[index].TargetGreen &&

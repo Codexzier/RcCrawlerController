@@ -64,16 +64,6 @@ void Bumper_SetAnimationMod(int inputValue, int minValue, int maxValue, int midd
 void Bumper_Update(){
 
   for(uint8_t index = 0; index < mCountRgbLeds2; index++) {
-    
-//    uint8_t red = mRgbSetup_Bumper[index].Red;
-//    uint8_t green = mRgbSetup_Bumper[index].Green;
-//    uint8_t blue = mRgbSetup_Bumper[index].Blue;
-
-//    red = map(mRgbBrightnessMaxValue2, 0, 255, 0, red);
-//    green = map(mRgbBrightnessMaxValue2, 0, 255, 0, green);
-//    blue = map(mRgbBrightnessMaxValue2, 0, 255, 0, blue);
-    
-//    mPixels_Bumper.setPixelColor(index, mPixels_Bumper.Color(red, green, blue));
     mPixels_Bumper.setPixelColor(index, mRgbSetup_Bumper[index].GetColor());
   }
 
@@ -94,10 +84,6 @@ void Bumper_GoOnline(){
     return;
   }
   
-//  mRgbSetup_Bumper[mCountRgbLeds2 - mBumper_GoOnline_Index - 1].Red = 100;
-//  mRgbSetup_Bumper[mBumper_GoOnline_Index].Green = 0;
-//  mRgbSetup_Bumper[mBumper_GoOnline_Index].Blue = 100;
-
   int8_t moveLeft = GetMoveLeft(mBumper_GoOnline_Index, mCountRgbLeds2);
   int8_t moveRight = GetMoveRight(mBumper_GoOnline_Index, mCountRgbLeds2);
 
@@ -280,10 +266,4 @@ void Bumper_SignalLost(){
   for(uint8_t index = 0; index < mCountRgbLeds2; index++) {
      Bumper_FadeToTarget(index);
   }
-
-  if(mSerialMonitor) {
-      Serial.print("Bumper Signal Lost: ");
-      Serial.println(mRgbSetup_Bumper[0].Red, DEC);
-  }
-  
 }
