@@ -136,7 +136,7 @@ boolean mBumper_GoOnline_Finish = false;
 #define PIN_INPUT_B A1                         // pwm input 2 for LED
 #define PIN_INPUT_C A2                         // pwm input 3 for LED RGB
 #define PIN_INPUT_D A3                         // pwm input 4 for brightness / animation option
-//#define PIN_INPUT_E A6                       // pwm input 5 for drive
+#define PIN_INPUT_E A6                         // pwm input 5 for drive
 
 boolean mVehicleModeSteerInvert = false;       // invert steering direction, only tracked vehicle 
 uint16_t mDeathbandPlusMinus = 20;             // Tolerance range in which no reaction should take 
@@ -168,6 +168,8 @@ uint16_t mReadValueB = 0;                      // input signal result from B
 uint16_t mReadValueC = 0;                      // input signal result from C
 uint16_t mReadValueD = 0;                      // input signal result from D
 uint16_t mReadValueE = 0;                      // input signal result from E
+
+uint8_t mSwitchToNextInput = 0;
 
 // TODO: Save last used Strip Light Mode
 
