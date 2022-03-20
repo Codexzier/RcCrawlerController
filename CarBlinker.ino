@@ -3,7 +3,8 @@ unsigned long mBlinkerLastCurrentTime = 0;
 
 // ========================================================================================
 // set the flashing 
-void CarBlinker_SetTurnSignal(int inputValue, int minValue, int maxValue, int middleValue) {
+void CarBlinker_SetTurnSignal(int inputValue, int minValue, int maxValue, int middleValue, bool changeDirection) {
+  
   // straigt ahead
   if(inputValue > middleValue - mDeathbandPlusMinus && 
      inputValue < middleValue + mDeathbandPlusMinus) {
@@ -12,12 +13,11 @@ void CarBlinker_SetTurnSignal(int inputValue, int minValue, int maxValue, int mi
     return;
   }
 
-  if(mCurrentMillis - mBlinkerLastCurrentTime > 300 || mBlinkerLastCurrentTime < 0) {
+  if(mCurrentMillis - mBlinkerLastCurrentTime > 500 || mBlinkerLastCurrentTime < 0) {
     mChangeBlinkerOnOff = !mChangeBlinkerOnOff;
     mBlinkerLastCurrentTime = mCurrentMillis;
 
     if(mChangeBlinkerOnOff) {
-
     }
 
     if(mSerialMonitor) {
@@ -37,7 +37,13 @@ void CarBlinker_SetTurnSignal(int inputValue, int minValue, int maxValue, int mi
   
   // set left
   if(inputValue >= middleValue + mDeathbandPlusMinus) {
-    CarLight_SetOnBlinkersLeft();
+
+    if(changeDirection) {
+      CarLight_SetOnBlinkersRight();
+    }
+    else {
+      CarLight_SetOnBlinkersLeft();
+    }
 
     if(mSerialMonitor) {
       Serial.println("Blinker LEFT");
@@ -47,13 +53,17 @@ void CarBlinker_SetTurnSignal(int inputValue, int minValue, int maxValue, int mi
 
   // set right
   if(inputValue <= middleValue - mDeathbandPlusMinus) {
-    CarLight_SetOnBlinkersRight();
+
+     if(changeDirection) {
+      CarLight_SetOnBlinkersLeft();
+    }
+    else {
+      CarLight_SetOnBlinkersRight();
+    }
 
     if(mSerialMonitor) {
       Serial.println("Blinker RIGHT");
     }
     return;
   }
-
-  
 }

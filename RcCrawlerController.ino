@@ -265,44 +265,7 @@ bool mChangeLightsToOnOrOff = true;
 // ========================================================================================
 void loop() {
 
-//  mActiveCount++;
-//  if(UpdateTimeUp(false)) {
-//    // im testfall macht das signalisieren eines Signal Verlust kein Sinn.
-//  }
-
-//  // alle aktuellen Einstellungen aktualisieren
-//  Bumper_Update();
-//  Roof_Update();
-//  CarLight_Update();
-//
-//  // get Rc Inputs 
-//  int inputValue_C = 2000;
-//  int inputValue_D = 1000;
-//
-//  //CarLight_SetOnStandLightOrDriveLight(2000, mInputMinB, mInputMaxB, mInputMiddleB);
-//  //CarBlinker_SetTurnSignal(2000, mInputMinA, mInputMaxA, mInputMiddleA);
-//
-//  SetAnimationOption(inputValue_D);
-//  
-//  //Bumper_SignalLost();
-//  Bumper_SetAnimationMod(inputValue_C, mInputMinC, mInputMaxC, mInputMiddleC);
-//  
-//  //Roof_SignalLost();
-//  Roof_SetAnimationMod(inputValue_C, mInputMinC, mInputMaxC, mInputMiddleC);
-//  Roof_Blinker(2000, mInputMinA, mInputMaxA, mInputMiddleA);
-//
-//  if(mSerialMonitor) {
-//    Serial.println("---------------------------------------------");
-//    delay(1);
-//  }
-//  
-//  return;
-
-  //###################################################
-  // Aktuell nicht verwendet
-  //###################################################
-
-  // update rgb led stats
+  // update leds
   Bumper_Update();
   Roof_Update();
   CarLight_Update();
@@ -320,19 +283,17 @@ void loop() {
 //    CarLight_SetOffBlinkers();
 //    CarLight_Update();
 //    delay(100);
-//
-//    Bumper_SignalLost();
-//    Roof_SignalLost();
-//
-//    delay(100);
-//    UpdateTimeUp(false);
-//    return;
+
+    Bumper_SignalLost();
+    Roof_SignalLost();
+
+    return;
   }
 
   SetAnimationOption(mReadValueD);
   
   // blinker
-  CarBlinker_SetTurnSignal(mReadValueA, mInputMinA, mInputMaxA, mInputMiddleA);
+  CarBlinker_SetTurnSignal(mReadValueA, mInputMinA, mInputMaxA, mInputMiddleA, true);
 
   // lights
   CarLight_SetOnStandLightOrDriveLight(mReadValueB, mInputMinB, mInputMaxB, mInputMiddleB);
@@ -393,9 +354,9 @@ bool UpdateTimeUp(bool f){
   unsigned long timeGone = mCurrentMillis - mLastMillis;
   
   if(timeGone > 1000) {
-    mLastMillis = mCurrentMillis;
     result = true;
   }
+   mLastMillis = mCurrentMillis;
 
   if(mSerialMonitor) {
     Serial.print("Millis: ");

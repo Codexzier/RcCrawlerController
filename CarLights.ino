@@ -1,6 +1,6 @@
 
 int8_t mShowSingleLedAndIndex_Index = 0;        // That used for tests the LEDs positions.
-int16_t mCarLights_FadeSteps = 150;               // steps to fade-in and fade-out.
+int16_t mCarLights_FadeSteps = 10;               // steps to fade-in and fade-out.
 
 
 // ========================================================================================
@@ -22,64 +22,12 @@ void CarLight_ShowSingleLedAndIndex(){
 }
 
 // ========================================================================================
-// Test dimming
-void CarLight_ShowDimming() {
-
-    int8_t steps = 100;
-uint16_t lastOn = 0;
-//Serial.println("FADEIN");
-
-  for(uint16_t brightness = 1; brightness < steps; brightness++) {
-    uint16_t on = map(brightness, 0, steps, 0, 4096);
-    if(lastOn > on) {
-      on = lastOn;
-    }
-    lastOn = on;
-    //Serial.print("FADEIN LED Brightness: "); Serial.println(on, DEC);
-    for (uint8_t pwmnum=0; pwmnum < mLEDs_Size; pwmnum++) {
-      
-      mCarLights.setPWM(
-        mLEDs[pwmnum].portNumber, 
-        on, 
-        mLEDs[pwmnum].off);
-    }
-    delay(30);
-  }
-  
-//Serial.print("to on Last LED Brightness: "); Serial.println(lastOn, DEC);
-//  delay(1000);
-
-//Serial.println("FADEOUT");
-  for(uint16_t brightness = 0; brightness < steps; brightness++) {
-    uint16_t on = map(brightness, 0, steps, 4096, 0);
-    if(lastOn < on) {
-      on = lastOn;
-    }
-lastOn = on;
-    //Serial.print("FADEOUT LED Brightness: "); Serial.println(on, DEC);
-    for (uint8_t pwmnum=0; pwmnum < mLEDs_Size; pwmnum++) {
-      
-      mCarLights.setPWM(
-        mLEDs[pwmnum].portNumber, 
-        on, 
-        mLEDs[pwmnum].off);
-
-      //delay(10);
-    }
-    delay(30);
-  }
-  
-  Serial.print("to off Last LED Brightness: "); Serial.println(lastOn, DEC);
-  delay(1000);
-}
-
-// ========================================================================================
 // used if the remote connection lost
 void CarLight_Offline() {
+  
   if(mSerialMonitor) {
       Serial.println("CarLight offline!");
   }
-  
 }
 
 // ========================================================================================

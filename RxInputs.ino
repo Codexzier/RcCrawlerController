@@ -18,14 +18,14 @@ void RcInput_Setup(){
   pinMode(PIN_INPUT_B, INPUT);
   pinMode(PIN_INPUT_C, INPUT);
   pinMode(PIN_INPUT_D, INPUT);
-  pinMode(PIN_INPUT_E, INPUT);
+  //pinMode(PIN_INPUT_E, INPUT);
 }
 
 void RcInputsReadInputs() {
 
-  if(RcInputs_CurrentTimeup()) {
-    return;
-  }
+//  if(RcInputs_CurrentTimeup()) {
+//    return;
+//  }
 
   // Nur einmal pro iteration
   // alle müssen nicht Zeitnah gesetzt werden, 
@@ -34,8 +34,8 @@ void RcInputsReadInputs() {
     case(0): { mReadValueA = pulseIn(PIN_INPUT_A, HIGH); mSwitchToNextInput++; break; }
     case(1): { mReadValueB = pulseIn(PIN_INPUT_B, HIGH); mSwitchToNextInput++; break; }
     case(2): { mReadValueC = pulseIn(PIN_INPUT_C, HIGH); mSwitchToNextInput++; break; }
-    case(3): { mReadValueD = pulseIn(PIN_INPUT_D, HIGH); mSwitchToNextInput++; break; }
-    default: { mReadValueE = pulseIn(PIN_INPUT_E, HIGH); mSwitchToNextInput = 0; break; }
+    default: { mReadValueD = pulseIn(PIN_INPUT_D, HIGH); mSwitchToNextInput = 0; break; }
+    //default: { mReadValueE = pulseIn(PIN_INPUT_E, HIGH); mSwitchToNextInput = 0; break; }
   }
   
 //  mReadValueA = pulseIn(PIN_INPUT_A, HIGH);
@@ -49,7 +49,7 @@ void RcInputsReadInputs() {
     Serial.print("\tINPUT B: "); Serial.print(mReadValueB);
     Serial.print("\tINPUT C: "); Serial.print(mReadValueC);
     Serial.print("\tINPUT D: "); Serial.print(mReadValueD);
-    Serial.print("\tINPUT E: "); Serial.print(mReadValueE);
+    //Serial.print("\tINPUT E: "); Serial.print(mReadValueE);
     Serial.println("\t");
     delay(100);
   }

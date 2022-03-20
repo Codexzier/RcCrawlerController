@@ -29,6 +29,7 @@ boolean Roof_CurrentTimeup2(){
 void Roof_SetAnimationMod(int inputValue, int minValue, int maxValue, int middleValue) {
 
   mRoofSpeed = 20;
+  
   if(Roof_CurrentTimeup()) {
     return;
   }
@@ -44,7 +45,7 @@ void Roof_SetAnimationMod(int inputValue, int minValue, int maxValue, int middle
   // roof lights on (signal is near 1500)
   if(inputValue > middleValue - mThresholdValue &&
      inputValue < middleValue + mThresholdValue) {
-    
+
     mRoof_Off_Prepare = false;
     Roof_On();
     return;
@@ -56,14 +57,15 @@ void Roof_SetAnimationMod(int inputValue, int minValue, int maxValue, int middle
     mRoof_Off_Prepare = false;
     mRoof_On_Prepare = false;
 
-    switch(mInputD_AnimationOption) {
-      case(1): { Roof_PulseLight(); break; }
-      case(2): { Roof_GlitterEffect(); break; }
-      default: {
-        Roof_GlitterEffect();
-        break;
-      }
-    }
+    Roof_PulseLight();
+//    switch(mInputD_AnimationOption) {
+//      case(1): { Roof_PulseLight(); break; }
+//      case(2): { Roof_GlitterEffect(); break; }
+//      default: {
+//        Roof_GlitterEffect();
+//        break;
+//      }
+//    }
   }
 }
 
@@ -387,13 +389,13 @@ void Roof_Blinker(int inputValue, int minValue, int maxValue, int middleValue){
     mRoof_Blinker_Blue = 0;
   }
   
-  if(mRoof_State >= 10) {
+  if(mRoof_State >= 5) {
     mRoof_Blinker_Red = 0;
     mRoof_Blinker_Green = 0;
     mRoof_Blinker_Blue = 0;
   }
 
-  if(mRoof_State >= 20) {
+  if(mRoof_State >= 10) {
     mRoof_State = 0;
   }
   else {
