@@ -1,8 +1,20 @@
+// ========================================================================================
+// Description:       Blinker Steuerung und animation
+// ========================================================================================
+
+// ========================================================================================
+// allgemeine blinker Variablen
 bool mChangeBlinkerOnOff = false;
 unsigned long mBlinkerLastCurrentTime = 0;
 
 // ========================================================================================
-// set the flashing 
+// set the flashing for turn left or right
+// ----------------------------------------------------------------------------------------
+// inputValue       = signal input value from rx
+// minValue         = signal minimum value
+// maxValue         = signal maximum value
+// middleValue      = signal middle value
+// changeDirection  = invert set target result
 void CarBlinker_SetTurnSignal(int inputValue, int minValue, int maxValue, int middleValue, bool changeDirection) {
   
   // straigt ahead
@@ -18,11 +30,12 @@ void CarBlinker_SetTurnSignal(int inputValue, int minValue, int maxValue, int mi
     mBlinkerLastCurrentTime = mCurrentMillis;
 
     if(mChangeBlinkerOnOff) {
+      // TODO: Sollte ein anderer Off Wert gesetzt werden.
     }
 
     if(mSerialMonitor) {
-      Serial.print("Change blinker: ");
-      Serial.println(mChangeBlinkerOnOff, BIN);
+      //Serial.print("Change blinker: ");
+      //Serial.println(mChangeBlinkerOnOff, BIN);
     }
   }
 
@@ -30,7 +43,7 @@ void CarBlinker_SetTurnSignal(int inputValue, int minValue, int maxValue, int mi
     CarLight_SetOffBlinkers();
 
     if(mSerialMonitor) {
-      Serial.println("Blinker OFF");
+      //Serial.println("Blinker OFF");
     }
     return;
   }
@@ -46,7 +59,7 @@ void CarBlinker_SetTurnSignal(int inputValue, int minValue, int maxValue, int mi
     }
 
     if(mSerialMonitor) {
-      Serial.println("Blinker LEFT");
+      //Serial.println("Blinker LEFT");
     }
     return;
   }
@@ -62,7 +75,7 @@ void CarBlinker_SetTurnSignal(int inputValue, int minValue, int maxValue, int mi
     }
 
     if(mSerialMonitor) {
-      Serial.println("Blinker RIGHT");
+      //Serial.println("Blinker RIGHT");
     }
     return;
   }

@@ -1,6 +1,6 @@
 
 int8_t mShowSingleLedAndIndex_Index = 0;        // That used for tests the LEDs positions.
-int16_t mCarLights_FadeSteps = 10;               // steps to fade-in and fade-out.
+int16_t mCarLights_FadeSteps = 20;               // steps to fade-in and fade-out.
 
 
 // ========================================================================================
@@ -18,7 +18,7 @@ void CarLight_ShowSingleLedAndIndex(){
 
   mCarLights.setPWM(mShowSingleLedAndIndex_Index, 0, 0);
   delay(4000);
-  mCarLights.setPWM(mShowSingleLedAndIndex_Index, 4096, 0);
+  mCarLights.setPWM(mShowSingleLedAndIndex_Index, 4095, 0);
 }
 
 // ========================================================================================
@@ -59,18 +59,18 @@ void CarLight_Off(){
 void CarLight_Update() {
 
   for(int index = 0; index < mLEDs_Size; index++) {
-    if(mSerialMonitor) {
+    if(mSerialMonitor && index == 1) {
 //      Serial.print("CarLight INDEX: "); 
 //      Serial.print(index, DEC);
 //      Serial.print(", Mapped Port: ");
 //      Serial.print(mLEDs[index].portNumber, DEC);
-//      Serial.print(", LED Value: ");
-//      Serial.print(mLEDs[index].on, DEC);
+//      Serial.print(", LED Value (off): ");
+//      Serial.print(mLEDs[index].off, DEC);
 //      Serial.print(", Step value: ");
 //      Serial.println(mLEDs[index].noChanged, DEC);
     }
 
-    if(mLEDs[index].lastOnValue != mLEDs[index].on) {
+    if(mLEDs[index].lastOnValue != mLEDs[index].off) {
       mCarLights.setPWM(
         mLEDs[index].portNumber, 
         mLEDs[index].on, 
@@ -146,8 +146,8 @@ void CarLight_SetOnStandLights(){
   CarLedTypeSetValue(1, false);
   CarLedTypeSetValue(4, false);
     // front stand
-  CarLedTypeSetValue(2, true);
-  CarLedTypeSetValue(5, true);
+  CarLedTypeSetValue(2, true, 3500);
+  CarLedTypeSetValue(5, true, 3500);
   // rear
   CarLedTypeSetValue(7, false);
   CarLedTypeSetValue(9, false);
@@ -189,44 +189,61 @@ void CarLight_SetOnBlinkersRight(){
   CarLedTypeSetValue(6, true);
 }
 
+void CarLedTypeSetValue(int portNumber, bool goOn) {
+  CarLedTypeSetValue(portNumber, goOn, 0);
+}
 // ========================================================================================
 // Set the value to the target LED Car light.
-void CarLedTypeSetValue(int portNumber, bool goOn) {
+
+// maxValueOn = is an inverted value 0 is full on and 4095 is off
+void CarLedTypeSetValue(int portNumber, bool goOn, int16_t maxValueOn) {
 
   int index = CarLedsGetIndex(portNumber);
   int16_t stepBrightness = 4096 / mCarLights_FadeSteps;
-  int temp = 0;
+  int16_t temp = 0;
 
   //mLEDs[index].noChanged = stepBrightness;
-  mLEDs[index].lastOnValue = mLEDs[index].on;
+  mLEDs[index].lastOnValue = mLEDs[index].off;
   
-  if(!goOn) {
+  if(goOn) {
     // setup LED on
-    if(mLEDs[index].on > 0) {
-      temp = (int16_t)mLEDs[index].on - stepBrightness;
+    if(mLEDs[index].off > 0) {
+      temp = (int16_t)mLEDs[index].off - stepBrightness;
     }
 
-    if(temp > 0) {
-      mLEDs[index].on = temp;
+    if(temp > stepBrightness + maxValueOn) {
+      //mLEDs[index].on = temp;
+      mLEDs[index].off = temp;
+    }
+    else {
+      mLEDs[index].off = maxValueOn;
     }
 
-    if(temp < 0) {
-      mLEDs[index].on = 0;
-    }
+    // abgeändert in Else 
+//    if(temp < 0) {
+//      mLEDs[index].on = 0;
+//    }
   }
   else {
 
-    if(mLEDs[index].on < 4096) {
-      temp = mLEDs[index].on + stepBrightness;
+    if(mLEDs[index].off < 4096) {
+      temp = mLEDs[index].off + stepBrightness;
     }
 
     if(temp < 4096) {
-      mLEDs[index].on = temp;  
+      mLEDs[index].off = temp;
     }
+    else {
+      mLEDs[index].off = 4095;
+    }
+
+//    if(mLEDs[index].off >= 4096) {
+//      mLEDs[index].off = 4095;
+//    }
   }
 
   mLEDs[index].noChanged = temp;
-  mLEDs[index].off = 0;
+  mLEDs[index].on = 0;
 }
 
 // ========================================================================================

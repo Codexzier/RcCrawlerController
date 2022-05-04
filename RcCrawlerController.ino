@@ -7,23 +7,46 @@
 // Receiver:      FrSky RX8R
 // Actor:         RGB LEDs WS2812b, PCA9685
 // Description:   Licht Steuerung
-// Stand:         06.03.2022
+// Stand:         02.05.2022
 // ========================================================================================
 
 #include <Adafruit_NeoPixel.h>
 #include <Adafruit_PWMServoDriver.h>
 
 // ========================================================================================
-// Setup
+// Setup - Parameter for color and Light animations.
 
-// TODO: Setup of Roof Light Animation
-// TODO: Setup of Front Bumper Light Animation
+// Color Index
+// -------------------------
+// 0 = Orange
+// 1 = gelb
+// 2 = türkis
+// 3 = hellblau
+// 4 = defuse neutral
+// 5 = dark tyrkis
+// 6 = dark wine red
+// 7 = 
+// 8 = lila
+// 9 = rosa
+
+// Animation Index
+// -------------------------
+// 0 = like Knight Rider / K.I.T.T moving light
+
+uint16_t mRoof_ColorIndex = 0;
+uint16_t mRoof_AnimIndex = 0;
+
+uint16_t mBumper_ColorIndex = 0; //8;
+uint16_t mBumper_AnimIndex = 0;
 
 
 // ========================================================================================
 // Debuggen
 bool mSerialMonitor = false;                  // Set this value true, for show all Value 
                                               // on Serial Monitor.
+                                              // WARNING: The runtime in debug is significantly slower.
+
+bool mDemoMode = false;
 
 // ========================================================================================
 // LED Control with PWM driver.
@@ -196,12 +219,12 @@ void setup() {
   }
 
   mCarLights.begin();
-  mCarLights.setOscillatorFrequency(27000000);
+  //mCarLights.setOscillatorFrequency(27000000);
   mCarLights.setPWMFreq(1600);
   Wire.setClock(400000);
 
   // set off
-  CarLight_SetOnStandLightOrDriveLight(1000, mInputMinB, mInputMaxB, mInputMiddleB);
+  //CarLight_SetOnStandLightOrDriveLight(1000, mInputMinB, mInputMaxB, mInputMiddleB);
   
   // --------------------------------------------------------------------------------------
   if(mSerialMonitor) {
@@ -252,24 +275,30 @@ void setup() {
     Bumper_GoOnline_Fadeout();
     Bumper_Update();
   }
-    
-  CarLight_Off();
-  CarLight_Update();
+
+  for (uint8_t pwmnum=0; pwmnum < 16; pwmnum++) {
+    mCarLights.setPWM(pwmnum, 0, 4095);
+  }
   delay(1000);
 }
-
 
 long mTimeToChange = 0;
 bool mChangeLightsToOnOrOff = true;
 
+
 // ========================================================================================
 void loop() {
+
+  if(mDemoMode) {
+    demoLoop();
+    return;
+  }
 
   // update leds
   Bumper_Update();
   Roof_Update();
   CarLight_Update();
-  
+
   // read PWM signals from Receiver
   RcInputsReadInputs();
   
@@ -359,8 +388,8 @@ bool UpdateTimeUp(bool f){
    mLastMillis = mCurrentMillis;
 
   if(mSerialMonitor) {
-    Serial.print("Millis: ");
-    Serial.println(timeGone, DEC);
+    //Serial.print("Millis: ");
+    //Serial.println(timeGone, DEC);
   }
   
   if(result && f) {

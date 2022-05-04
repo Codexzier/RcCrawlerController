@@ -29,7 +29,7 @@ void RcInputsReadInputs() {
 
   // Nur einmal pro iteration
   // alle müssen nicht Zeitnah gesetzt werden, 
-  // reicht ein aktualisieren der einzelnen Werte
+  // reicht einen zu aktualisieren der einzelnen Werte
   switch(mSwitchToNextInput) {
     case(0): { mReadValueA = pulseIn(PIN_INPUT_A, HIGH); mSwitchToNextInput++; break; }
     case(1): { mReadValueB = pulseIn(PIN_INPUT_B, HIGH); mSwitchToNextInput++; break; }
@@ -37,12 +37,6 @@ void RcInputsReadInputs() {
     default: { mReadValueD = pulseIn(PIN_INPUT_D, HIGH); mSwitchToNextInput = 0; break; }
     //default: { mReadValueE = pulseIn(PIN_INPUT_E, HIGH); mSwitchToNextInput = 0; break; }
   }
-  
-//  mReadValueA = pulseIn(PIN_INPUT_A, HIGH);
-//  mReadValueB = pulseIn(PIN_INPUT_B, HIGH);
-//  mReadValueC = pulseIn(PIN_INPUT_C, HIGH);
-//  mReadValueD = pulseIn(PIN_INPUT_D, HIGH);
-//  mReadValueE = pulseIn(PIN_INPUT_E, HIGH);
 
   if(mSerialMonitor) {
     Serial.print("INPUT A: "); Serial.print(mReadValueA);

@@ -229,9 +229,11 @@ void Bumper_WalkingLight() {
     }
   }
 
-  mRgbSetup_Bumper[mBumperAnimationIndex].Red = 156;
-  mRgbSetup_Bumper[mBumperAnimationIndex].Green = 0;
-  mRgbSetup_Bumper[mBumperAnimationIndex].Blue = 255;
+  Helper_SetRgbColor(
+    mBumper_ColorIndex,
+    mRgbSetup_Bumper[mBumperAnimationIndex].Red,
+    mRgbSetup_Bumper[mBumperAnimationIndex].Green,
+    mRgbSetup_Bumper[mBumperAnimationIndex].Blue);
 }
 
 void Bumper_SignalLost(){

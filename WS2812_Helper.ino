@@ -74,7 +74,7 @@ int8_t GetMoveRight(uint8_t goOnline_index, uint8_t countRgbLeds){
 // 7 = 
 // 8 = lila
 // 9 = rosa
-void Helper_SetRgbColor(int colorIndex, uint8_t &red, uint8_t &green, uint8_t &blue) {
+void Helper_SetRgbColor(uint16_t colorIndex, uint8_t &red, uint8_t &green, uint8_t &blue) {
  
   switch(colorIndex) {
     case(0): {

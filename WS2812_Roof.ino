@@ -406,7 +406,7 @@ void Roof_Blinker(int inputValue, int minValue, int maxValue, int middleValue){
   if(inputValue <= middleValue - mDeathbandPlusMinus) {
   
     if(mSerialMonitor) {
-      Serial.println("Blinker LEFT");
+      //Serial.println("Blinker LEFT");
     }
 
     for(uint8_t index = 0; index < 3; index++) {
@@ -431,7 +431,7 @@ void Roof_Blinker(int inputValue, int minValue, int maxValue, int middleValue){
   if(inputValue >= middleValue + mDeathbandPlusMinus) {
 
     if(mSerialMonitor) {
-      Serial.println("Blinker RIGHT");
+      //Serial.println("Blinker RIGHT");
     }
 
     for(uint8_t index = mCountRgbLeds1 - 3; index < mCountRgbLeds1; index++) {
