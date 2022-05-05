@@ -7,21 +7,15 @@ void BootSequenz_Setup() {
     Serial.begin(115200);
   }
 
-  // --------------------------------------------------------------------------------------
-  BootSequenz_CarLights();
-  
-  // --------------------------------------------------------------------------------------
   RcInput_Setup();
-
-  // --------------------------------------------------------------------------------------
+  BootSequenz_CarLights();
   BootSequenz_RGBs();
 }
 
 void BootSequenz_CarLights() {
-  if(mSerialMonitor) {
-    Serial.println("Start PCA for all LEDs");
-  }
 
+  SerialMonitorHelper_Print("Start PCA for all LEDs");
+  
   mCarLights.begin();
   //mCarLights.setOscillatorFrequency(27000000);
   mCarLights.setPWMFreq(1600);
@@ -34,9 +28,8 @@ void BootSequenz_CarLights() {
 }
 
 void BootSequenz_RGBs() {
-  if(mSerialMonitor) {
-    Serial.println("Start RGB Strips for Pin 2, 3, 4");
-  }
+
+  SerialMonitorHelper_Print("Start RGB Strips for Pin 2, 3, 4");
 
   mPixels_Status.begin();
   mPixels_Roof.begin();
@@ -45,34 +38,52 @@ void BootSequenz_RGBs() {
   Status_On();
 
   // --------------------------------------------------------------------------------------
-  // boot sequence roof - Fadein
-  while(!mRoof_GoOnline_Finish) {
-    UpdateTimeUp(false);
-    Roof_GoOnline();
-    Roof_Update();
+  // all off
+
+  // bumper
+  for(uint8_t index = 0; index < mCountRgbLeds2; index++) {
+    mPixels_Bumper.setPixelColor(index, 0);
   }
-  mRoof_GoOnline_Finish = false;
+
+  mPixels_Bumper.show();
+
+  // roof
+  for(uint8_t index = 0; index < mCountRgbLeds1; index++) {
+    mPixels_Roof.setPixelColor(index, 0);
+  }
   
-  // boot sequence roof - Fadeout
-  while(!mRoof_GoOnline_Finish) {
-    UpdateTimeUp(false);
-    Roof_GoOnline_Fadeout();
-    Roof_Update();
-  }
+  mPixels_Roof.show();
+  
+
+  // --------------------------------------------------------------------------------------
+  // boot sequence roof - Fadein
+//  while(!mRoof_GoOnline_Finish) {
+//    UpdateTimeUp(false);
+//    Roof_GoOnline();
+//    Roof_Update();
+//  }
+//  mRoof_GoOnline_Finish = false;
+//  
+//  // boot sequence roof - Fadeout
+//  while(!mRoof_GoOnline_Finish) {
+//    UpdateTimeUp(false);
+//    Roof_GoOnline_Fadeout();
+//    Roof_Update();
+//  }
 
   // --------------------------------------------------------------------------------------
   // boot sequence bumper - Fadein
-  while(!mBumper_GoOnline_Finish) {
-    UpdateTimeUp(false);
-    Bumper_GoOnline();
-    Bumper_Update();
-  }
-  mBumper_GoOnline_Finish = false;
-
-  // boot sequence roof - Fadeout
-  while(!mBumper_GoOnline_Finish) {
-    UpdateTimeUp(false);
-    Bumper_GoOnline_Fadeout();
-    Bumper_Update();
-  }
+//  while(!mBumper_GoOnline_Finish) {
+//    UpdateTimeUp(false);
+//    Bumper_GoOnline();
+//    Bumper_Update();
+//  }
+//  mBumper_GoOnline_Finish = false;
+//
+//  // boot sequence roof - Fadeout
+//  while(!mBumper_GoOnline_Finish) {
+//    UpdateTimeUp(false);
+//    Bumper_GoOnline_Fadeout();
+//    Bumper_Update();
+//  }
 }

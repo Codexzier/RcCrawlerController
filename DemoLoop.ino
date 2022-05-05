@@ -3,7 +3,7 @@
 // ========================================================================================
 
 
-void demoLoop(){
+void DemoLoop_Run(){
 
   // 10 mal alle LEDs nach einander leuchten lassen
   for(int i = 0; i < 10; i++) {
@@ -13,36 +13,36 @@ void demoLoop(){
       mCarLights.setPWM(pwmnum, 0, 4095);
     }
   }
-  
+
+  // verschiedene Signal zustände testen
   uint16_t signal_A_Turn = 2000;
   uint16_t signal_B_Light = 1000;
   uint16_t signal_C_RgbLights = 1000;
   uint16_t signal_D_Animation = 1000;
 
-  if(mSerialMonitor) {
-    Serial.println("light off");
-  }
+  SerialMonitorHelper_Print("light off");
+
   for(int i = 0; i < 1000; i++) {
-    demoLoopIteration(signal_A_Turn, signal_B_Light, signal_C_RgbLights, signal_D_Animation);
+    DemoLoop_Iteration(signal_A_Turn, signal_B_Light, signal_C_RgbLights, signal_D_Animation);
     delay(2);
   }
 
   signal_B_Light = 1500;
-  Serial.println("light stand");
+  SerialMonitorHelper_Print("light stand");
   for(int i = 0; i < 1000; i++) {
-    demoLoopIteration(signal_A_Turn, signal_B_Light, signal_C_RgbLights, signal_D_Animation);
+    DemoLoop_Iteration(signal_A_Turn, signal_B_Light, signal_C_RgbLights, signal_D_Animation);
     delay(2);
   }
 
   signal_B_Light = 2000;
-  Serial.println("light on");
+  SerialMonitorHelper_Print("light on");
   for(int i = 0; i < 1000; i++) {
-    demoLoopIteration(signal_A_Turn, signal_B_Light, signal_C_RgbLights, signal_D_Animation);
+    DemoLoop_Iteration(signal_A_Turn, signal_B_Light, signal_C_RgbLights, signal_D_Animation);
     delay(2);
   }
 }
 
-void demoLoopIteration(uint16_t signal_A_Turn,
+void DemoLoop_Iteration(uint16_t signal_A_Turn,
     uint16_t signal_B_Light,
     uint16_t signal_C_RgbLights,
     uint16_t signal_D_Animation) {

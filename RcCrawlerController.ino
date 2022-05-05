@@ -7,7 +7,7 @@
 // Receiver:      FrSky RX8R
 // Actor:         RGB LEDs WS2812b, PCA9685
 // Description:   Licht Steuerung
-// Stand:         02.05.2022
+// Stand:         05.05.2022
 // ========================================================================================
 
 #include <Adafruit_NeoPixel.h>
@@ -46,7 +46,7 @@ bool mSerialMonitor = false;                  // Set this value true, for show a
                                               // on Serial Monitor.
                                               // WARNING: The runtime in debug is significantly slower.
 
-bool mDemoMode = false;
+bool mDemoMode = true;
 
 // ========================================================================================
 // LED Control with PWM driver.
@@ -221,7 +221,7 @@ void setup() {
 void loop() {
 
   if(mDemoMode) {
-    demoLoop();
+    DemoLoop_Run();
     return;
   }
 
@@ -236,13 +236,6 @@ void loop() {
   // if the receiver is not on,
   // the current time goes up.
   if(UpdateTimeUp(true)) {
-    
-//    CarLight_SetOnBlinkers();
-//    CarLight_Update();
-//    delay(1000);
-//    CarLight_SetOffBlinkers();
-//    CarLight_Update();
-//    delay(100);
 
     Bumper_SignalLost();
     Roof_SignalLost();

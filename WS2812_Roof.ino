@@ -130,9 +130,7 @@ void Roof_GoOnline_Fadeout() {
       delay(300);
       mRoof_GoOnline_Finish = true;
 
-      if(mSerialMonitor) {
-        Serial.println("Fadeout finish");
-      }
+      SerialMonitorHelper_Print("Fadeout finish");
   }
 }
 
@@ -404,10 +402,8 @@ void Roof_Blinker(int inputValue, int minValue, int maxValue, int middleValue){
 
   // set right
   if(inputValue <= middleValue - mDeathbandPlusMinus) {
-  
-    if(mSerialMonitor) {
-      //Serial.println("Blinker LEFT");
-    }
+    
+    //SerialMonitorHelper_Print("Blinker LEFT");
 
     for(uint8_t index = 0; index < 3; index++) {
       if(mRoof_Blinker_Red == 0 &&
@@ -430,9 +426,7 @@ void Roof_Blinker(int inputValue, int minValue, int maxValue, int middleValue){
   // set left
   if(inputValue >= middleValue + mDeathbandPlusMinus) {
 
-    if(mSerialMonitor) {
-      //Serial.println("Blinker RIGHT");
-    }
+    //SerialMonitorHelper_Print("Blinker RIGHT");
 
     for(uint8_t index = mCountRgbLeds1 - 3; index < mCountRgbLeds1; index++) {
       if(mRoof_Blinker_Red == 0 &&
@@ -494,9 +488,7 @@ void Roof_GlitterEffect(){
     
 
     if(mRgbSetup_Roof[index].On) {
-      if(mSerialMonitor) {
-        Serial.println("mRgbSetup_Roof[index].On");
-      }
+      SerialMonitorHelper_Print("mRgbSetup_Roof[index].On");
       continue;
     }
 

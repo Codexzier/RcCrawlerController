@@ -14,9 +14,7 @@ boolean RcInputs_CurrentTimeup(){
 
 void RcInput_Setup(){
 
-  if(mSerialMonitor) {
-    Serial.println("Setup Inputs");
-  }
+  SerialMonitorHelper_Print("Setup Inputs");
 
   pinMode(PIN_INPUT_A, INPUT);
   pinMode(PIN_INPUT_B, INPUT);

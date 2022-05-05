@@ -24,18 +24,17 @@ void CarLight_ShowSingleLedAndIndex(){
 // ========================================================================================
 // used if the remote connection lost
 void CarLight_Offline() {
-  
-  if(mSerialMonitor) {
-      Serial.println("CarLight offline!");
+  SerialMonitorHelper_Print("CarLight offline!");
+
+  for (uint8_t pwmnum=0; pwmnum < 16; pwmnum++) {
+    mCarLights.setPWM(pwmnum, 0, 4095);
   }
 }
 
 // ========================================================================================
 // set all LEDs on
 void CarLight_On() {
-  if(mSerialMonitor) {
-      Serial.println("CarLight on!");
-  }
+  SerialMonitorHelper_Print("CarLight on!");
 
   for (uint8_t pwmnum=0; pwmnum < mLEDs_Size; pwmnum++) {  
     CarLedTypeSetValue(mLEDs[pwmnum].portNumber, true);
@@ -45,9 +44,7 @@ void CarLight_On() {
 // ========================================================================================
 // set all LEDs off
 void CarLight_Off(){
-  if(mSerialMonitor) {
-      Serial.println("CarLight off!");
-  }
+  SerialMonitorHelper_Print("CarLight off!");
   
   for (uint8_t pwmnum=0; pwmnum < mLEDs_Size; pwmnum++) {
     CarLedTypeSetValue(mLEDs[pwmnum].portNumber, false);
