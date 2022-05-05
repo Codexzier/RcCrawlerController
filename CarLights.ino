@@ -186,6 +186,14 @@ void CarLight_SetOnBlinkersRight(){
   CarLedTypeSetValue(6, true);
 }
 
+void CarLight_NumberPlate_On(){
+  CarLedTypeSetValue(12, true);
+}
+
+void CarLight_NumberPlate_Off(){
+  CarLedTypeSetValue(12, false);
+}
+
 void CarLedTypeSetValue(int portNumber, bool goOn) {
   CarLedTypeSetValue(portNumber, goOn, 0);
 }

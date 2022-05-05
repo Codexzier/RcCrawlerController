@@ -22,6 +22,7 @@ void DemoLoop_Run(){
 
   SerialMonitorHelper_Print("light off");
 
+  CarLight_NumberPlate_On();
   for(int i = 0; i < 1000; i++) {
     DemoLoop_Iteration(signal_A_Turn, signal_B_Light, signal_C_RgbLights, signal_D_Animation);
     delay(2);
@@ -36,6 +37,8 @@ void DemoLoop_Run(){
 
   signal_B_Light = 2000;
   SerialMonitorHelper_Print("light on");
+  
+  CarLight_NumberPlate_Off();
   for(int i = 0; i < 1000; i++) {
     DemoLoop_Iteration(signal_A_Turn, signal_B_Light, signal_C_RgbLights, signal_D_Animation);
     delay(2);
