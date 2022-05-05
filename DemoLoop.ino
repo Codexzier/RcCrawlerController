@@ -1,11 +1,27 @@
+// ========================================================================================
+// Description:       Demo and test Sequenzen
+// ========================================================================================
+
 
 void demoLoop(){
+
+  // 10 mal alle LEDs nach einander leuchten lassen
+  for(int i = 0; i < 10; i++) {
+    for (uint8_t pwmnum=0; pwmnum < 16; pwmnum++) {
+      mCarLights.setPWM(pwmnum, 0, 0);
+      delay(500);
+      mCarLights.setPWM(pwmnum, 0, 4095);
+    }
+  }
+  
   uint16_t signal_A_Turn = 2000;
   uint16_t signal_B_Light = 1000;
   uint16_t signal_C_RgbLights = 1000;
   uint16_t signal_D_Animation = 1000;
 
-  Serial.println("light off");
+  if(mSerialMonitor) {
+    Serial.println("light off");
+  }
   for(int i = 0; i < 1000; i++) {
     demoLoopIteration(signal_A_Turn, signal_B_Light, signal_C_RgbLights, signal_D_Animation);
     delay(2);

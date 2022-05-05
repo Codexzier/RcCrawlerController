@@ -202,89 +202,20 @@ uint8_t mInputD_AnimationOption = 0;
 
 // ========================================================================================
 // Timings and other things
-unsigned long mCurrentMillis;                       // aktuelle verstrichende Zeit.
-unsigned long mLastMillis;                       // aktuelle verstrichende Zeit.
+unsigned long mCurrentMillis;                   // aktuelle Zeit.
+unsigned long mLastMillis;                      // verstrichende Zeit.
 
 uint16_t mActiveCount = 0;
 
-// ========================================================================================
-void setup() {
-  if(mSerialMonitor) {
-    Serial.begin(115200);
-  }
-
-  // --------------------------------------------------------------------------------------
-  if(mSerialMonitor) {
-    Serial.println("Start PCA for all LEDs");
-  }
-
-  mCarLights.begin();
-  //mCarLights.setOscillatorFrequency(27000000);
-  mCarLights.setPWMFreq(1600);
-  Wire.setClock(400000);
-
-  // set off
-  //CarLight_SetOnStandLightOrDriveLight(1000, mInputMinB, mInputMaxB, mInputMiddleB);
-  
-  // --------------------------------------------------------------------------------------
-  if(mSerialMonitor) {
-    Serial.println("Setup Inputs");
-  }
-
-  RcInput_Setup();
-
-  // --------------------------------------------------------------------------------------
-  if(mSerialMonitor) {
-    Serial.println("Start RGB Strips for Pin 2, 3, 4");
-  }
-
-  mPixels_Status.begin();
-  mPixels_Roof.begin();
-  mPixels_Bumper.begin();
-
-  Status_On();
-
-  // --------------------------------------------------------------------------------------
-  // boot sequence roof - Fadein
-  while(!mRoof_GoOnline_Finish) {
-    UpdateTimeUp(false);
-    Roof_GoOnline();
-    Roof_Update();
-  }
-  mRoof_GoOnline_Finish = false;
-  
-  // boot sequence roof - Fadeout
-  while(!mRoof_GoOnline_Finish) {
-    UpdateTimeUp(false);
-    Roof_GoOnline_Fadeout();
-    Roof_Update();
-  }
-
-  // --------------------------------------------------------------------------------------
-  // boot sequence bumper - Fadein
-  while(!mBumper_GoOnline_Finish) {
-    UpdateTimeUp(false);
-    Bumper_GoOnline();
-    Bumper_Update();
-  }
-  mBumper_GoOnline_Finish = false;
-
-  // boot sequence roof - Fadeout
-  while(!mBumper_GoOnline_Finish) {
-    UpdateTimeUp(false);
-    Bumper_GoOnline_Fadeout();
-    Bumper_Update();
-  }
-
-  for (uint8_t pwmnum=0; pwmnum < 16; pwmnum++) {
-    mCarLights.setPWM(pwmnum, 0, 4095);
-  }
-  delay(1000);
-}
-
+// TODO: wird das noch verwendet?
 long mTimeToChange = 0;
 bool mChangeLightsToOnOrOff = true;
 
+// ========================================================================================
+void setup() {
+  // setup lights and inputs
+  BootSequenz_Setup();
+}
 
 // ========================================================================================
 void loop() {
@@ -393,9 +324,7 @@ bool UpdateTimeUp(bool f){
   }
   
   if(result && f) {
-    if(mSerialMonitor) {
-      Serial.println("long iteration. Set all in offline state!");
-    }
+    SerialMonitorHelper_Print("long iteration. Set all in offline state!");
   }
   return result;
 }
