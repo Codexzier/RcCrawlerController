@@ -1,6 +1,6 @@
 
 int8_t mShowSingleLedAndIndex_Index = 0;        // That used for tests the LEDs positions.
-int16_t mCarLights_FadeSteps = 20;               // steps to fade-in and fade-out.
+int16_t mCarLights_FadeSteps = 5;               // steps to fade-in and fade-out.
 
 
 // ========================================================================================
@@ -107,11 +107,13 @@ void CarLight_SetOffStandAndNormalLights(){
   CarLedTypeSetValue(1, false);
   CarLedTypeSetValue(4, false);
   // front stand
-  CarLedTypeSetValue(2, false);
-  CarLedTypeSetValue(5, false);
+  CarLedTypeSetValue(2, false, 3500, 20);
+  CarLedTypeSetValue(5, false, 3500, 20);
   // rear
   CarLedTypeSetValue(7, false);
   CarLedTypeSetValue(9, false);
+  // number plate
+  CarLedTypeSetValue(12, false, 3500, 30);
 }
 
 void CarLight_SetOnNormalLights(){
@@ -119,11 +121,13 @@ void CarLight_SetOnNormalLights(){
   CarLedTypeSetValue(1, true);
   CarLedTypeSetValue(4, true);
   // front stand
-  CarLedTypeSetValue(2, false);
-  CarLedTypeSetValue(5, false);
+  CarLedTypeSetValue(2, false, 3500, 20);
+  CarLedTypeSetValue(5, false, 3500, 20);
   // rear
   CarLedTypeSetValue(7, true);
   CarLedTypeSetValue(9, true);
+  // number plate
+  CarLedTypeSetValue(12, true, 3500, 30);
 }
 
 void CarLight_SetOffNormalLights(){
@@ -131,11 +135,13 @@ void CarLight_SetOffNormalLights(){
   CarLedTypeSetValue(1, false);
   CarLedTypeSetValue(4, false);
     // front stand
-  CarLedTypeSetValue(2, false);
-  CarLedTypeSetValue(5, false);
+  CarLedTypeSetValue(2, false, 3500, 20);
+  CarLedTypeSetValue(5, false, 3500, 20);
   // rear
   CarLedTypeSetValue(7, false);
   CarLedTypeSetValue(9, false);
+  // number plate
+  CarLedTypeSetValue(12, false, 3500, 30);
 }
 
 void CarLight_SetOnStandLights(){
@@ -143,11 +149,13 @@ void CarLight_SetOnStandLights(){
   CarLedTypeSetValue(1, false);
   CarLedTypeSetValue(4, false);
     // front stand
-  CarLedTypeSetValue(2, true, 3500);
-  CarLedTypeSetValue(5, true, 3500);
+  CarLedTypeSetValue(2, true, 3500, 20);
+  CarLedTypeSetValue(5, true, 3500, 20);
   // rear
   CarLedTypeSetValue(7, false);
   CarLedTypeSetValue(9, false);
+  // number plate
+  CarLedTypeSetValue(12, true, 3500, 30);
 }
 
 // ========================================================================================
@@ -187,24 +195,35 @@ void CarLight_SetOnBlinkersRight(){
 }
 
 void CarLight_NumberPlate_On(){
-  CarLedTypeSetValue(12, true);
+  CarLedTypeSetValue(12, true, 3500, 4);
 }
 
 void CarLight_NumberPlate_Off(){
   CarLedTypeSetValue(12, false);
 }
 
-void CarLedTypeSetValue(int portNumber, bool goOn) {
-  CarLedTypeSetValue(portNumber, goOn, 0);
-}
 // ========================================================================================
 // Set the value to the target LED Car light.
+// ----------------------------------------------------------------------------------------
+// portNumber = LED Number
+// goOn       = true for on, false for going to off.
+void CarLedTypeSetValue(int portNumber, bool goOn) {
+  CarLedTypeSetValue(portNumber, goOn, 0, 1);
+}
 
+// ========================================================================================
+// Set the value to the target LED Car light.
+// ----------------------------------------------------------------------------------------
+// portNumber = LED Number
+// goOn       = true for on, false for going to off.
 // maxValueOn = is an inverted value 0 is full on and 4095 is off
-void CarLedTypeSetValue(int portNumber, bool goOn, int16_t maxValueOn) {
+//              - 0 is on
+//              - 4095 is off
+// multiplyStep = default => 1
+void CarLedTypeSetValue(int portNumber, bool goOn, int16_t maxValueOn, int16_t multiplyStep) {
 
   int index = CarLedsGetIndex(portNumber);
-  int16_t stepBrightness = 4096 / mCarLights_FadeSteps;
+  int16_t stepBrightness = 4096 / (mCarLights_FadeSteps * multiplyStep);
   int16_t temp = 0;
 
   //mLEDs[index].noChanged = stepBrightness;
@@ -212,39 +231,44 @@ void CarLedTypeSetValue(int portNumber, bool goOn, int16_t maxValueOn) {
   
   if(goOn) {
     // setup LED on
+
+    // the value is higher than '0'
     if(mLEDs[index].off > 0) {
+      // reduce low level value 
       temp = (int16_t)mLEDs[index].off - stepBrightness;
     }
 
+    // is prepare temp value greater than 
     if(temp > stepBrightness + maxValueOn) {
-      //mLEDs[index].on = temp;
+      // set new value for low level
       mLEDs[index].off = temp;
     }
     else {
+      // is same or lower, set max value
       mLEDs[index].off = maxValueOn;
+      //temp = maxValueOn;
     }
-
-    // abgeändert in Else 
-//    if(temp < 0) {
-//      mLEDs[index].on = 0;
-//    }
   }
   else {
 
+    // setup LED off
+
+    // level value is lower than max
     if(mLEDs[index].off < 4096) {
+      // prepare new low level value
       temp = mLEDs[index].off + stepBrightness;
     }
 
+    // prepare low level value is lower than max
     if(temp < 4096) {
+      // set new value for low level
       mLEDs[index].off = temp;
     }
     else {
+      // set max value for off
       mLEDs[index].off = 4095;
+      //temp = 4095;
     }
-
-//    if(mLEDs[index].off >= 4096) {
-//      mLEDs[index].off = 4095;
-//    }
   }
 
   mLEDs[index].noChanged = temp;

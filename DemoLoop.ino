@@ -9,8 +9,28 @@ void DemoLoop_Run(){
   for(int i = 0; i < 10; i++) {
     for (uint8_t pwmnum=0; pwmnum < 16; pwmnum++) {
       mCarLights.setPWM(pwmnum, 0, 0);
-      delay(500);
+      delay(100);
       mCarLights.setPWM(pwmnum, 0, 4095);
+    }
+  }
+
+  for(int i = 0; i < 10; i++) {
+    // bumper
+    for(uint8_t index = 0; index < mCountRgbLeds2; index++) {
+      mPixels_Bumper.setPixelColor(index, mPixels_Bumper.Color(255, 90, 0));
+      mPixels_Bumper.show();
+      delay(2);
+      mPixels_Bumper.setPixelColor(index, 0);
+      mPixels_Bumper.show();
+    }
+  
+    // roof
+    for(uint8_t index = 0; index < mCountRgbLeds1; index++) {
+      mPixels_Roof.setPixelColor(index, mPixels_Roof.Color(255, 90, 0));
+      mPixels_Roof.show();
+      delay(2);
+      mPixels_Roof.setPixelColor(index, 0);
+      mPixels_Roof.show();
     }
   }
 
@@ -54,7 +74,7 @@ void DemoLoop_Iteration(uint16_t signal_A_Turn,
   Roof_Update();
   CarLight_Update();
 
-  delay(100); // Simulate readInput delay
+  delay(20); // Simulate readInput delay
 
   UpdateTimeUp(true);
 

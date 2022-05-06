@@ -271,7 +271,7 @@ void Roof_PulseLight() {
   uint8_t red = 10;
   uint8_t green = 0;
   uint8_t blue = 0;
-  Helper_SetRgbColor(8, red, green, blue);
+  Helper_SetRgbColor(mRoof_ColorIndex, red, green, blue);
     
   if(mRoofAnimationChangedLeftRightSide){
     if(moveLeft > -1) {
@@ -376,7 +376,7 @@ uint8_t mRoof_Blinker_Blue = 0;
 
 void Roof_Blinker(int inputValue, int minValue, int maxValue, int middleValue){
 
-  mRoofSpeed2 = 20;
+  mRoofSpeed2 = 10;
   if(Roof_CurrentTimeup2()) {
     return;
   }

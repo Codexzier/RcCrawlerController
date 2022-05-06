@@ -127,7 +127,7 @@ void Helper_SetRgbColor(uint16_t colorIndex, uint8_t &red, uint8_t &green, uint8
       break;
     }
     case(7): {
-      // 
+      // Okka / dark yellow
       red = 90;
       green = 79;
       blue = 50;

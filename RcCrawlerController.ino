@@ -25,7 +25,7 @@
 // 4 = defuse neutral
 // 5 = dark tyrkis
 // 6 = dark wine red
-// 7 = 
+// 7 = Okka / dark yellow
 // 8 = lila
 // 9 = rosa
 
@@ -33,10 +33,10 @@
 // -------------------------
 // 0 = like Knight Rider / K.I.T.T moving light
 
-uint16_t mRoof_ColorIndex = 0;
+uint16_t mRoof_ColorIndex = 8;
 uint16_t mRoof_AnimIndex = 0;
 
-uint16_t mBumper_ColorIndex = 0; //8;
+uint16_t mBumper_ColorIndex = 8;
 uint16_t mBumper_AnimIndex = 0;
 
 
@@ -46,7 +46,7 @@ bool mSerialMonitor = false;                  // Set this value true, for show a
                                               // on Serial Monitor.
                                               // WARNING: The runtime in debug is significantly slower.
 
-bool mDemoMode = true;
+bool mDemoMode = false;
 
 // ========================================================================================
 // LED Control with PWM driver.
@@ -254,6 +254,12 @@ void loop() {
   // roof and bumper rgb lights
   Bumper_SetAnimationMod(mReadValueC, mInputMinC, mInputMaxC, mInputMiddleC);
   Roof_SetAnimationMod(mReadValueC, mInputMinC, mInputMaxC, mInputMiddleC);
+
+  // roof lights off (signal is near 1000)
+  if(mReadValueC < mInputMinC + mThresholdValue) {
+    return;
+  }
+  
   Roof_Blinker(mReadValueA, mInputMinA, mInputMaxA, mInputMiddleA);
 }
 
